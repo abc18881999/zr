@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>👑 游戏大厅 - PURE GOLD LEGEND 👑</title>
+    <style>
+        /* ================= 💎 全局与重置 ================= */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body {
+            background-color: #050508; color: #ffd700; 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden; display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+            user-select: none;
+        }
+
+        .app-container {
+            width: 100%; max-width: 450px; min-height: 100vh;
+            background: linear-gradient(180deg, rgba(20,15,5,0.85) 0%, rgba(5,5,8,0.98) 100%);
+            border-left: 2px solid #b89742; border-right: 2px solid #b89742;
+            padding: 20px; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,0,0,0.9);
+            position: relative; perspective: 1400px;
+        }
+
+        /* ================= 🍔 导航与菜单 ================= */
+        .top-nav-fixed { position: absolute; top: 15px; left: 15px; z-index: 10000; display: flex; gap: 15px; }
+        .nav-icon-btn { 
+            font-size: 14px; font-weight: bold; color: #ffd700; cursor: pointer; 
+            text-shadow: 0 0 10px #ffd700; background: none; border: none; 
+            display: flex; align-items: center; gap: 5px; padding: 8px 12px;
+            border-radius: 6px; transition: all 0.3s;
+        }
+        .nav-icon-btn:hover { background: rgba(255, 215, 0, 0.1); transform: scale(1.05); }
+
+        /* 左侧菜单 */
+        .side-menu {
+            position: absolute; top: 0; left: -210px; width: 190px; height: 100%;
+            background: rgba(10, 8, 5, 0.98); border-right: 2px solid #ffd700;
+            z-index: 9999; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 60px 15px 15px; overflow-y: auto; box-shadow: 10px 0 30px rgba(0,0,0,0.9);
+        }
+        .side-menu.open { left: 0; }
+
+        .menu-close { text-align: right; font-size: 20px; cursor: pointer; color: #fff; margin-bottom: 20px; }
+        .accordion-item { margin-bottom: 10px; border: 1px solid #3d2f0f; border-radius: 8px; background: #110d04; overflow: hidden; }
+        .accordion-header {
+            padding: 12px; background: linear-gradient(90deg, #2a1f0a, #110d04); color: #ffd700;
+            font-weight: bold; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between;
+        }
+        .accordion-content { display: none; padding: 12px; background: #0a0804; color: #ccc; font-size: 12px; line-height: 1.6; }
+        .accordion-content.open { display: block; border-top: 1px dashed #3d2f0f;}
+        
+        .menu-btn {
+            background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #ffd700;
+            color: #ffd700; padding: 10px; width: 100%; border-radius: 6px; margin-top: 8px; cursor: pointer; font-weight: bold; font-size: 13px;
+        }
+
+        /* ================= 🎭 悬浮登录按钮 ================= */
+        .float-login-btn {
+            position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 999999; 
+            background: linear-gradient(180deg, #ffd700, #b8860b); border: 2px solid #000; 
+            padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; 
+            color: #000; box-shadow: 0 4px 15px rgba(255,215,0,0.5); font-size: 14px;
+        }
+        .float-login-btn:hover { transform: translateX(-50%) scale(1.05); }
+
+        /* ================= 🎮 游戏大厅主容器 ================= */
+        .lobby-header {
+            text-align: center; margin-top: 60px; margin-bottom: 30px;
+        }
+
+        .lobby-title {
+            font-size: 32px; font-weight: 900; color: #ffd700; 
+            text-shadow: 0 0 20px #ffd700, 0 0 40px rgba(255,215,0,0.3);
+            letter-spacing: 2px; margin-bottom: 10px;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px #ffd700, 0 0 40px rgba(255,215,0,0.3); }
+            50% { text-shadow: 0 0 30px #ffd700, 0 0 60px rgba(255,215,0,0.5); }
+        }
+
+        .lobby-subtitle {
+            font-size: 13px; color: #b89742; letter-spacing: 1px;
+        }
+
+        /* ================= 🎯 游戏分类卡片网格 ================= */
+        .games-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; 
+            margin-bottom: 30px; padding: 0 10px;
+        }
+
+        .game-category-card {
+            background: linear-gradient(135deg, #1a1405 0%, #050508 100%);
+            border: 2px solid #ffd700; border-radius: 12px; padding: 20px;
+            text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(255,215,0,0.1), inset 0 0 15px rgba(255,215,0,0.05);
+            position: relative; overflow: hidden;
+        }
+
+        .game-category-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.3s;
+        }
+
+        .game-category-card:hover {
+            border-color: #ffed4e; transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(255,215,0,0.3), inset 0 0 20px rgba(255,215,0,0.1);
+        }
+
+        .game-category-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 48px; margin-bottom: 12px; display: inline-block;
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+
+        .game-category-card:nth-child(1) .card-icon { animation-delay: 0s; }
+        .game-category-card:nth-child(2) .card-icon { animation-delay: 0.2s; }
+        .game-category-card:nth-child(3) .card-icon { animation-delay: 0.4s; }
+        .game-category-card:nth-child(4) .card-icon { animation-delay: 0.6s; }
+        .game-category-card:nth-child(5) .card-icon { animation-delay: 0.8s; }
+        .game-category-card:nth-child(6) .card-icon { animation-delay: 1s; }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .card-title {
+            font-size: 16px; font-weight: 900; color: #ffd700; 
+            margin-bottom: 8px; letter-spacing: 1px;
+        }
+
+        .card-subtitle {
+            font-size: 11px; color: #b89742; opacity: 0.8;
+        }
+
+        .card-count {
+            font-size: 12px; color: #888; margin-top: 10px;
+            border-top: 1px solid #3d2f0f; padding-top: 8px;
+        }
+
+        .card-count strong { color: #00ff00; }
+
+        /* ================= 💰 底部账户信息 ================= */
+        .lobby-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: linear-gradient(180deg, rgba(5,5,8,0.98) 0%, rgba(10,8,5,0.99) 100%);
+            border-top: 2px solid #ffd700; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 450px; margin: 0 auto; z-index: 100;
+        }
+
+        .balance-info {
+            display: flex; flex-direction: column;
+        }
+
+        .balance-label { font-size: 11px; color: #b89742; }
+        .balance-amount { font-size: 18px; font-weight: 900; color: #fff; text-shadow: 0 0 10px #ffd700; }
+
+        .footer-btn {
+            background: linear-gradient(180deg, #ffd700, #b8860b); color: #000;
+            border: 2px solid #fff; padding: 10px 20px; border-radius: 20px;
+            font-weight: bold; cursor: pointer; font-size: 13px;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.3); transition: all 0.3s;
+        }
+
+        .footer-btn:hover { transform: scale(1.05); }
+
+        /* ================= 🎵 粒子和装饰 ================= */
+        #particleBox { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            pointer-events: none; z-index: 1; overflow: hidden;
+        }
+
+        /* ================= 📱 响应式设计 ================= */
+        @media (max-width: 480px) {
+            .games-grid { grid-template-columns: 1fr; }
+            .lobby-title { font-size: 28px; }
+            .app-container { padding: 15px; }
+        }
+    </style>
+</head>
+<body onclick="handleClickOutside(event)">
+    <!-- 悬浮登录按钮 -->
+    <button class="float-login-btn" onclick="window.location.href='auth.html';">
+        登录 / 注册
+    </button>
+
+    <!-- 粒子容器 -->
+    <div id="particleBox"></div>
+
+    <div class="app-container">
+        
+        <!-- 左上角导航 -->
+        <div class="top-nav-fixed">
+            <button class="nav-icon-btn" onclick="toggleMenu(event)">☰ 设置</button>
+        </div>
+
+        <!-- 左侧设置菜单 -->
+        <div class="side-menu" id="sideMenu">
+            <div class="menu-close" onclick="closeAllMenus()">✖ 关闭</div>
+            
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>⚙️ 硬件与音效</span><span>▼</span>
+                </div>
+                <div class="accordion-content open">
+                    <button class="menu-btn" style="display: flex; justify-content: space-between; align-items: center;" onclick="toggleSetting('bgm')">
+                        <span>🎵 背景音乐</span> <span id="bgmStatus">开</span>
+                    </button>
+                    <button class="menu-btn" style="display: flex; justify-content: space-between; align-items: center;" onclick="toggleSetting('sfx')">
+                        <span>🔊 游戏音效</span> <span id="sfxStatus">开</span>
+                    </button>
+                    <button class="menu-btn" style="display: flex; justify-content: space-between; align-items: center;" onclick="toggleSetting('vibrate')">
+                        <span>📳 震动效果</span> <span id="vibStatus">开</span>
+                    </button>
+                    <button class="menu-btn" style="border-color:#555;" onclick="location.reload()">🔄 刷新页面</button>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>💰 账户管理</span><span>▼</span>
+                </div>
+                <div class="accordion-content">
+                    <button class="menu-btn" onclick="openExchange('in')">📥 充值</button>
+                    <button class="menu-btn" onclick="openExchange('out')">📤 提现</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 大厅头部 -->
+        <div class="lobby-header">
+            <h1 class="lobby-title">🎮 游戏大厅</h1>
+            <p class="lobby-subtitle">选择你喜爱的游戏类型</p>
+        </div>
+
+        <!-- 游戏分类网格 -->
+        <div class="games-grid">
+            <!-- 老虎机 -->
+            <div class="game-category-card" onclick="enterGameHall('slots')">
+                <div class="card-icon">🎰</div>
+                <div class="card-title">老虎机</div>
+                <div class="card-subtitle">SLOTS</div>
+                <div class="card-count">共 <strong>8</strong> 款游戏</div>
+            </div>
+
+            <!-- 百家乐 -->
+            <div class="game-category-card" onclick="enterGameHall('baccarat')">
+                <div class="card-icon">🎴</div>
+                <div class="card-title">百家乐</div>
+                <div class="card-subtitle">BACCARAT</div>
+                <div class="card-count">共 <strong>5</strong> 款游戏</div>
+            </div>
+
+            <!-- 骰子游戏 -->
+            <div class="game-category-card" onclick="enterGameHall('dice')">
+                <div class="card-icon">🎲</div>
+                <div class="card-title">骰子游戏</div>
+                <div class="card-subtitle">DICE</div>
+                <div class="card-count">共 <strong>6</strong> 款游戏</div>
+            </div>
+
+            <!-- 捕鱼游戏 -->
+            <div class="game-category-card" onclick="enterGameHall('fishing')">
+                <div class="card-icon">🎣</div>
+                <div class="card-title">捕鱼游戏</div>
+                <div class="card-subtitle">FISHING</div>
+                <div class="card-count">共 <strong>4</strong> 款游戏</div>
+            </div>
+
+            <!-- 真人棋牌 -->
+            <div class="game-category-card" onclick="enterGameHall('poker')">
+                <div class="card-icon">♠️</div>
+                <div class="card-title">真人棋牌</div>
+                <div class="card-subtitle">POKER</div>
+                <div class="card-count">共 <strong>7</strong> 款游戏</div>
+            </div>
+
+            <!-- 其他游戏 -->
+            <div class="game-category-card" onclick="enterGameHall('other')">
+                <div class="card-icon">🎯</div>
+                <div class="card-title">其他游戏</div>
+                <div class="card-subtitle">MORE</div>
+                <div class="card-count">共 <strong>12</strong> 款游戏</div>
+            </div>
+        </div>
+
+        <!-- 底部占位符 -->
+        <div style="height: 100px;"></div>
+    </div>
+
+    <!-- 底部账户信息栏 -->
+    <div class="lobby-footer">
+        <div class="balance-info">
+            <span class="balance-label">💰 账户余额</span>
+            <span class="balance-amount" id="playerBalance">10,000</span>
+        </div>
+        <button class="footer-btn" onclick="openExchange('in')">快速充值</button>
+    </div>
+
+    <!-- 背景音乐 -->
+    <audio id="bgMusic" loop src="https://files.catbox.moe/pj05ky.mp3" preload="auto"></audio>
+
+    <script>
+        /* ================= 核心配置与状态 ================= */
+        let playerWallet = parseFloat(localStorage.getItem('wd_wallet')) || 10000;
+        let settings = JSON.parse(localStorage.getItem('wd_settings')) || { bgm: true, sfx: true, vibrate: true };
+        let audioUnlocked = false;
+
+        /* ================= 🎵 背景音乐管理 ================= */
+        function handleBGM() {
+            const bgm = document.getElementById('bgMusic');
+            if(!audioUnlocked || !bgm) return;
+            bgm.volume = 0.01;
+            if(settings.bgm) { 
+                bgm.play().catch(e=>console.log("BGM Blocked")); 
+            } else { 
+                bgm.pause(); 
+            }
+        }
+
+        // 解锁音频
+        document.body.addEventListener('touchstart', function unlockAudio() {
+            if(!audioUnlocked) {
+                audioUnlocked = true; 
+                handleBGM();
+                document.body.removeEventListener('touchstart', unlockAudio);
+            }
+        }, {once: true});
+
+        document.body.addEventListener('click', function unlockAudioClick() {
+            if(!audioUnlocked) {
+                audioUnlocked = true; 
+                handleBGM();
+                document.body.removeEventListener('click', unlockAudioClick);
+            }
+        }, {once: true});
+
+        // 页面切出自动静音
+        document.addEventListener('visibilitychange', function() {
+            const bgm = document.getElementById('bgMusic');
+            if (!bgm) return;
+            if (document.hidden) {
+                bgm.pause();
+            } else {
+                if (settings.bgm && audioUnlocked) {
+                    bgm.play();
+                }
+            }
+        });
+
+        /* ================= ⚙️ 设置管理 ================= */
+        function updateWallet(amount) {
+            playerWallet += amount;
+            playerWallet = Math.round(playerWallet * 100) / 100;
+            localStorage.setItem('wd_wallet', playerWallet);
+            document.getElementById('playerBalance').innerText = playerWallet.toLocaleString();
+        }
+
+        function toggleSetting(key) {
+            settings[key] = !settings[key];
+            localStorage.setItem('wd_settings', JSON.stringify(settings));
+            initSettingsUI();
+            if(key === 'bgm') handleBGM();
+        }
+
+        function initSettingsUI() {
+            document.getElementById('bgmStatus').innerText = settings.bgm ? "开": "关";
+            document.getElementById('sfxStatus').innerText = settings.sfx ? "开": "关";
+            document.getElementById('vibStatus').innerText = settings.vibrate ? "开" : "关";
+        }
+
+        /* ================= 🎮 菜单与导航 ================= */
+        function toggleMenu(event) {
+            if(event) event.stopPropagation();
+            const menu = document.getElementById('sideMenu');
+            menu.classList.toggle('open');
+        }
+
+        function closeAllMenus() {
+            document.getElementById('sideMenu').classList.remove('open');
+        }
+
+        function handleClickOutside(event) {
+            const sideMenu = document.getElementById('sideMenu');
+            if (!sideMenu.contains(event.target) && !event.target.closest('.nav-icon-btn')) {
+                closeAllMenus();
+            }
+        }
+
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('open');
+            header.querySelectorAll('span')[1].innerText = content.classList.contains('open') ? '▲' : '▼';
+        }
+
+        /* ================= 🎯 游戏大厅跳转 ================= */
+        function enterGameHall(category) {
+            const halls = {
+                'slots': 'game-halls/slots-hall.html',
+                'baccarat': 'game-halls/baccarat-hall.html',
+                'dice': 'game-halls/dice-hall.html',
+                'fishing': 'game-halls/fishing-hall.html',
+                'poker': 'game-halls/poker-hall.html',
+                'other': 'game-halls/other-hall.html'
+            };
+            
+            if (halls[category]) {
+                window.location.href = halls[category];
+            }
+        }
+
+        /* ================= 💰 充值与提现 ================= */
+        function openExchange(type) {
+            alert(`${type === 'in' ? '充值' : '提现'}功能 - 即将跳转到财务中心...`);
+            // window.location.href = 'exchange.html?type=' + type;
+        }
+
+        /* ================= 🚀 初始化 ================= */
+        window.addEventListener('load', () => {
+            initSettingsUI();
+            document.getElementById('playerBalance').innerText = playerWallet.toLocaleString();
+        });
+    </script>
+</body>
+</html>
