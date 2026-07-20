@@ -33,6 +33,15 @@
             <div style="width: 30px;"></div>
         </div>
         <div class="games-list">
+            <div class="game-card hot" style="grid-column: span 2; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                <div style="font-size: 48px;">👑</div>
+                <div style="flex:1; text-align:left;">
+                    <div class="badge badge-hot" style="margin-bottom:4px;">🔥 旗舰</div>
+                    <div class="game-card-name" style="font-size:16px;">纯金传奇 3×5</div>
+                    <div class="game-card-desc">九线全功能老虎机 · 免费旋转 · 百搭替换</div>
+                </div>
+                <button class="play-btn" style="width:auto; padding:10px 18px;" onclick="go('slots-pure-gold')">进入</button>
+            </div>
             <div class="game-card hot">
                 <div class="game-card-icon">🍀</div>
                 <div class="badge badge-hot">🔥 热门</div>
@@ -93,6 +102,7 @@
     </div>
     <script>
         const routes = {
+            'slots-pure-gold': '../games/slots-pure-gold.html',
             'slots-lucky4': '../games/slots-lucky4.html'
         };
         function go(id) {
