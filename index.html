@@ -25,8 +25,9 @@
         .page { display: none; flex-direction: column; flex: 1; margin-top: 50px; z-index: 10;}
         .page.active { display: flex; }
 
-        /* ================= 🌟 真实 3D 金币引擎 ================= */
-        .wangda-coin-scene { position: relative; transform-style: preserve-3d; display: inline-block; }
+        /* ================= 🌟 真实 3D 金币引擎 (修复点击覆盖) ================= */
+        /* 增加 pointer-events: none 防止 3D 模型的隐形盒子阻挡点击 */
+        .wangda-coin-scene { position: relative; transform-style: preserve-3d; display: inline-block; pointer-events: none; }
         
         .coin-container-3d {
             position: relative; transform-style: preserve-3d;
@@ -83,15 +84,16 @@
         /* 粒子容器 */
         #particleBox { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 1; overflow: hidden;}
 
-        /* ================= 🍔 导航与菜单 ================= */
-        .top-nav-fixed { position: absolute; top: 15px; left: 15px; z-index: 1; display: flex; gap: 15px; }
+        /* ================= 🍔 导航与菜单 (修复层级) ================= */
+        /* 将 z-index 提升到 100，避免被页面其他元素盖住 */
+        .top-nav-fixed { position: absolute; top: 15px; left: 15px; z-index: 100; display: flex; gap: 15px; }
         .nav-icon-btn { font-size: 14px; font-weight: bold; color: #ffd700; cursor: pointer; text-shadow: 0 0 10px #ffd700; background: none; border: none; display: flex; align-items: center; gap: 4px; }
 
         /* 左侧菜单 */
         .side-menu {
             position: absolute; top: 0; left: -210px; width: 190px; height: 100%;
             background: rgba(10, 8, 5, 0.98); border-right: 2px solid #ffd700;
-            z-index: 9999; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99999; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 60px 15px 15px; overflow-y: auto; box-shadow: 10px 0 30px rgba(0,0,0,0.9);
         }
         .side-menu.open { left: 0; }
@@ -100,7 +102,7 @@
         .record-drawer {
             position: absolute; top: -100%; left: 0; width: 100%; 
             background: rgba(10, 8, 5, 0.99); border-bottom: 2px solid #ffd700;
-            z-index: 9999; transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 99999; transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 60px 20px 30px; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.9);
             max-height: 75vh;
         }
@@ -178,11 +180,12 @@
             background: #0a0804; padding: 8px; border-radius: 6px; border: 1px solid #3d2f0f;
         }
 
+        /* 修复客服悬浮按钮默认位置，上移到底部 140px，避免盖住摇杆按钮 */
         .tg-premium-contact {
-            position: fixed; bottom: 80px; right: 15px;
+            position: fixed; bottom: 140px; right: 15px;
             background: linear-gradient(135deg, #ffd700 0%, #8b6508 100%); color: #000;
             padding: 10px 16px; border-radius: 20px; font-weight: bold; box-shadow: 0 4px 20px rgba(255,215,0,0.5);
-            z-index: 9999; font-size: 13px; border: 1px solid #fff; touch-action: none; cursor: move;
+            z-index: 99999; font-size: 13px; border: 1px solid #fff; touch-action: none; cursor: move;
         }
     </style>
 </head>
@@ -344,12 +347,8 @@
                 <span>💰 充值与提现</span><span>▼</span>
             </div>
             <div class="accordion-content">
-                <button class="menu-btn" onclick="window.open('https://t.me/oyoyf', '_blank')">
-    📥 注入积分 (充值)
-</button>
-                <button class="menu-btn" onclick="location.href='https://t.me/bobei51'">
-    📥 注入积分 (充值)
-</button>
+                <button class="menu-btn" onclick="window.open('https://t.me/oyoyf', '_blank')">📥 注入积分 (充值)</button>
+                <button class="menu-btn" onclick="location.href='https://t.me/bobei51'">📥 注入积分 (充值)</button>
             </div>
         </div>
 
@@ -379,7 +378,8 @@
             <h2 class="shake-text" style="color:#ffd700; text-shadow: 0 0 15px #ffd700; letter-spacing: 2px;">VIP 专属大厅</h2>
         </div>
         <div class="premium-card">
-            <div style="font-size: 12px; color: #ffd700;">总资产积分储蓄柜 (连续点击5次可触发神秘指令)</div>
+            <!-- 修改文本说明避免误会 -->
+            <div style="font-size: 12px; color: #ffd700;">总资产积分储蓄柜 (连续点击8次可触发管理面板)</div>
             <div class="balance-num secret-trigger">加载中...</div>
         </div>
         <button class="menu-btn" style="padding: 18px; font-size: 18px; background: #ffd700; color:#000; box-shadow: 0 0 20px rgba(255,215,0,0.5);" onclick="switchPage('gamePage')">进入 3x5 纯金漆面盘</button>
@@ -444,7 +444,7 @@
         <button class="spin-btn" style="width:100%;" onclick="submitExchange()">向财务端提交申请</button>
     </div>
 
-    <!-- ================= q⚙️ 隐形风控后台 ================= -->
+    <!-- ================= ⚙️ 隐形风控后台 ================= -->
     <div id="adminPage" class="page" style="border: 2px solid #ff4d4d; background: rgba(20,0,0,0.9); padding: 15px; border-radius: 12px;">
         <h3 style=" color: #ff4d4d; text-align: center; margin-bottom: 15px;">🛡️ 极速风控调节端 (最高权限)</h3>
         <div style="margin-bottom: 15px;">
@@ -466,7 +466,8 @@
     </div>
 </div>
 
-<div class="tg-premium-contact" id="tgFloatLink" onclick="window.location.href='https://t.me/oyoyf'">✈️ 联系客服</div>
+<!-- 移除了直接的 onclick，由底部的 JS 统一处理点击和防拖拽误触 -->
+<div class="tg-premium-contact" id="tgFloatLink">✈️ 联系客服</div>
 
 <!-- 这是你原本的音频标签，保留在原位 -->
 <audio id="bgMusic" loop src="https://files.catbox.moe/pj05ky.mp3" preload="auto"></audio>
@@ -674,12 +675,13 @@
         if(settings.vibrate && navigator.vibrate) navigator.vibrate(pattern);
     }
 
+    // 防误触：触发后台需求点击次数提高至 8 次
     let secretClicks = 0; let secretTimer;
     document.querySelectorAll('.secret-trigger').forEach(el => {
         el.addEventListener('click', () => {
             secretClicks++; clearTimeout(secretTimer);
-            secretTimer = setTimeout(() => secretClicks = 0, 600);
-            if(secretClicks >= 5) {
+            secretTimer = setTimeout(() => secretClicks = 0, 800);
+            if(secretClicks >= 8) {
                 switchPage('adminPage'); secretClicks = 0; triggerVibrate([100,50,100]);
             }
         });
@@ -988,18 +990,26 @@
         }
     }
 
-    /* ================= 🚀 拖拽悬浮客服 ================= */
+    /* ================= 🚀 修复客服拖拽误触逻辑 ================= */
     const dragEl = document.getElementById('tgFloatLink');
-    let isDrag = false, sX, sY, iX, iY;
+    let isDrag = false, sX, sY, iX, iY, dragStartTime;
     dragEl.addEventListener('touchstart', e => {
         isDrag = false; sX = e.touches[0].clientX; sY = e.touches[0].clientY;
         iX = dragEl.offsetLeft; iY = dragEl.offsetTop;
+        dragStartTime = Date.now();
     }, {passive:true});
     dragEl.addEventListener('touchmove', e => {
         let dx = e.touches[0].clientX - sX, dy = e.touches[0].clientY - sY;
         if(Math.abs(dx)>5 || Math.abs(dy)>5) isDrag = true;
         if(isDrag) { dragEl.style.left = `${iX+dx}px`; dragEl.style.top = `${iY+dy}px`; dragEl.style.right='auto'; dragEl.style.bottom='auto';}
     }, {passive:true});
+    dragEl.addEventListener('touchend', e => {
+        let dragDuration = Date.now() - dragStartTime;
+        // 只有确实没有拖动，或者是极短的触碰，才算作有效点击，避免拖拽松手时跳转
+        if(!isDrag || dragDuration < 300) {
+            window.location.href='https://t.me/oyoyf';
+        }
+    });
 
     function createLobbyParticles() {
         const box = document.getElementById('particleBox');
