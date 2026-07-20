@@ -625,7 +625,7 @@
     function initSettingsUI() {
         document.getElementById('bgmStatus').innerText = settings.bgm ? "开": "关";
         document.getElementById('sfxStatus').innerText = settings.sfx ? "开": "关";
-        document.getElementById('vibStatus').innerText = settings.vibrate ? "开" : "关";
+        document.getElementById('vibStatus').innerText = settings.vibrate ? "开": "关";
         document.getElementById('adminWinRate').value = adminRate;
     }
 
@@ -748,7 +748,7 @@
     function toggleAccordion(header) {
         const content = header.nextElementSibling;
         content.classList.toggle('open');
-        header.querySelectorAll('span')[1].innerText = content.classList.contains('open') ? '▲' : '▼';
+        header.querySelectorAll('span')[1].innerText = content.classList.contains('open') ? '▲': '▼';
     }
 
     function openExchange(type) {
@@ -912,7 +912,7 @@
             }
 
             if (matchCount >= 3) {
-                let baseSym = (currentSymbol === '👆') ? '👆🏻' : currentSymbol; 
+                let baseSym = (currentSymbol === '👆') ? '👆🏻': currentSymbol; 
                 if (payTable[baseSym]) {
                     let odds = payTable[baseSym][matchCount];
                     let lineWin = lineBet * odds; 
@@ -953,7 +953,7 @@
 
         totalWin = Math.floor(totalWin * 100) / 100;
 
-        let actualBetCost = isFreeSpin ? 0 : bet;
+        let actualBetCost = isFreeSpin ? 0: bet;
         addRecord(actualBetCost, totalWin);
 
         if (totalWin > 0 || newFreeSpins > 0) {
