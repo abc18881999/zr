@@ -172,6 +172,24 @@
 
         .footer-btn:hover { transform: scale(1.05); }
 
+        /* ================= 🔊 音量滑块 ================= */
+        .volume-control { display: flex; align-items: center; gap: 8px; padding: 10px 0; }
+        .volume-label { font-size: 12px; color: #ffd700; min-width: 60px; }
+        .volume-slider {
+            flex: 1; -webkit-appearance: none; appearance: none; height: 6px;
+            border-radius: 3px; background: #3d2f0f; outline: none; cursor: pointer;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
+            border-radius: 50%; background: linear-gradient(180deg, #ffd700, #b8860b);
+            cursor: pointer; box-shadow: 0 0 6px rgba(255,215,0,0.5);
+        }
+        .volume-slider::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%; border: none;
+            background: linear-gradient(180deg, #ffd700, #b8860b); cursor: pointer;
+        }
+        .volume-value { font-size: 12px; color: #ffd700; min-width: 30px; text-align: right; }
+
         /* ================= 🎵 粒子和装饰 ================= */
         #particleBox { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -211,15 +229,21 @@
                     <span>⚙️ 硬件与音效</span><span>▼</span>
                 </div>
                 <div class="accordion-content open">
-                    <button class="menu-btn" style="display: flex; justify-content: space-between; align-items: center;" onclick="toggleSetting('bgm')">
-                        <span>🎵 背景音乐</span> <span id="bgmStatus">开</span>
-                    </button>
-                    <button class="menu-btn" style="display: flex; justify-content: space-between; align-items: center;" onclick="toggleSetting('sfx')">
-                        <span>🔊 游戏音效</span> <span id="sfxStatus">开</span>
-                    </button>
-                    <button class="menu-btn" style="display: flex; justify-content: space-between; align-items: center;" onclick="toggleSetting('vibrate')">
-                        <span>📳 震动效果</span> <span id="vibStatus">开</span>
-                    </button>
+                    <div class="volume-control">
+                        <span class="volume-label">🎵 音乐</span>
+                        <input type="range" class="volume-slider" id="bgmVolume" min="0" max="100" value="30" oninput="onVolumeChange('bgm', this.value)">
+                        <span class="volume-value" id="bgmVolVal">30</span>
+                    </div>
+                    <div class="volume-control">
+                        <span class="volume-label">🔊 音效</span>
+                        <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="80" oninput="onVolumeChange('sfx', this.value)">
+                        <span class="volume-value" id="sfxVolVal">80</span>
+                    </div>
+                    <div class="volume-control">
+                        <span class="volume-label">📳 震动</span>
+                        <input type="range" class="volume-slider" id="vibVolume" min="0" max="100" value="100" oninput="onVolumeChange('vib', this.value)">
+                        <span class="volume-value" id="vibVolVal">100</span>
+                    </div>
                     <button class="menu-btn" style="border-color:#555;" onclick="location.reload()">🔄 刷新页面</button>
                 </div>
             </div>
@@ -311,15 +335,16 @@
     <script>
         /* ================= 核心配置与状态 ================= */
         let playerWallet = parseFloat(localStorage.getItem('wd_wallet')) || 10000;
-        let settings = JSON.parse(localStorage.getItem('wd_settings')) || { bgm: true, sfx: true, vibrate: true };
+        let settings = JSON.parse(localStorage.getItem('wd_settings')) || { bgmVol: 30, sfxVol: 80, vibVol: 100 };
         let audioUnlocked = false;
 
         /* ================= 🎵 背景音乐管理 ================= */
         function handleBGM() {
             const bgm = document.getElementById('bgMusic');
             if(!audioUnlocked || !bgm) return;
-            bgm.volume = 0.01;
-            if(settings.bgm) { 
+            const vol = (settings.bgmVol || 0) / 100 * 0.5;
+            bgm.volume = vol;
+            if(vol > 0) { 
                 bgm.play().catch(e=>console.log("BGM Blocked")); 
             } else { 
                 bgm.pause(); 
@@ -350,7 +375,7 @@
             if (document.hidden) {
                 bgm.pause();
             } else {
-                if (settings.bgm && audioUnlocked) {
+                if ((settings.bgmVol || 0) > 0 && audioUnlocked) {
                     bgm.play();
                 }
             }
@@ -364,17 +389,32 @@
             document.getElementById('playerBalance').innerText = playerWallet.toLocaleString();
         }
 
-        function toggleSetting(key) {
-            settings[key] = !settings[key];
+        function onVolumeChange(key, val) {
+            const v = parseInt(val);
+            if (key === 'bgm') {
+                settings.bgmVol = v;
+                document.getElementById('bgmVolVal').innerText = v;
+                handleBGM();
+            } else if (key === 'sfx') {
+                settings.sfxVol = v;
+                document.getElementById('sfxVolVal').innerText = v;
+            } else if (key === 'vib') {
+                settings.vibVol = v;
+                document.getElementById('vibVolVal').innerText = v;
+            }
             localStorage.setItem('wd_settings', JSON.stringify(settings));
-            initSettingsUI();
-            if(key === 'bgm') handleBGM();
         }
 
         function initSettingsUI() {
-            document.getElementById('bgmStatus').innerText = settings.bgm ? "开": "关";
-            document.getElementById('sfxStatus').innerText = settings.sfx ? "开": "关";
-            document.getElementById('vibStatus').innerText = settings.vibrate ? "开" : "关";
+            const bgmV = settings.bgmVol ?? 30;
+            const sfxV = settings.sfxVol ?? 80;
+            const vibV = settings.vibVol ?? 100;
+            document.getElementById('bgmVolume').value = bgmV;
+            document.getElementById('bgmVolVal').innerText = bgmV;
+            document.getElementById('sfxVolume').value = sfxV;
+            document.getElementById('sfxVolVal').innerText = sfxV;
+            document.getElementById('vibVolume').value = vibV;
+            document.getElementById('vibVolVal').innerText = vibV;
         }
 
         /* ================= 🎮 菜单与导航 ================= */

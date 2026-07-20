@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎰 老虎机大厅</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #050508; color: #ffd700; font-family: sans-serif; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 450px; margin: 0 auto; background: linear-gradient(180deg, rgba(20,15,5,0.85) 0%, rgba(5,5,8,0.98) 100%); border-left: 2px solid #b89742; border-right: 2px solid #b89742; padding: 20px; min-height: 100vh; }
+        .hall-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: rgba(10,8,5,0.8); border: 1px solid #ffd700; border-radius: 8px; }
+        .back-btn { background: none; border: none; color: #ffd700; font-size: 20px; cursor: pointer; }
+        .hall-title { font-size: 20px; font-weight: 900; text-shadow: 0 0 10px #ffd700; }
+        .games-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 30px; }
+        .game-card { background: linear-gradient(135deg, #1a1405 0%, #050508 100%); border: 2px solid #ffd700; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 15px rgba(255,215,0,0.1); }
+        .game-card:hover { transform: translateY(-5px) scale(1.02); border-color: #ffed4e; box-shadow: 0 5px 25px rgba(255,215,0,0.3); }
+        .game-card.hot { border-color: #ff4500; box-shadow: 0 0 15px rgba(255,69,0,0.3); }
+        .game-card-icon { font-size: 40px; margin-bottom: 10px; }
+        .game-card-name { font-size: 14px; font-weight: bold; color: #ffd700; margin-bottom: 5px; }
+        .game-card-desc { font-size: 11px; color: #888; margin-bottom: 5px; }
+        .badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; }
+        .badge-hot { background: #ff4500; color: #fff; }
+        .badge-new { background: #00aa00; color: #fff; }
+        .play-btn { background: linear-gradient(180deg, #ffd700, #b8860b); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 12px; width: 100%; }
+        .play-btn:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="hall-header">
+            <button class="back-btn" onclick="history.back()">← 返回</button>
+            <div class="hall-title">🎰 老虎机</div>
+            <div style="width: 30px;"></div>
+        </div>
+        <div class="games-list">
+            <div class="game-card hot">
+                <div class="game-card-icon">🍀</div>
+                <div class="badge badge-hot">🔥 热门</div>
+                <div class="game-card-name">幸运四叶</div>
+                <div class="game-card-desc">四叶草转盘</div>
+                <button class="play-btn" onclick="go('slots-lucky4')">游玩</button>
+            </div>
+            <div class="game-card">
+                <div class="game-card-icon">💎</div>
+                <div class="badge badge-new">✨ 新品</div>
+                <div class="game-card-name">钻石风暴</div>
+                <div class="game-card-desc">宝石连线</div>
+                <button class="play-btn" onclick="go('slots-diamond')">游玩</button>
+            </div>
+            <div class="game-card">
+                <div class="game-card-icon">🍒</div>
+                <div class="badge" style="background:#555;color:#fff;">经典</div>
+                <div class="game-card-name">水果派对</div>
+                <div class="game-card-desc">经典水果机</div>
+                <button class="play-btn" onclick="go('slots-fruit')">游玩</button>
+            </div>
+            <div class="game-card">
+                <div class="game-card-icon">🐉</div>
+                <div class="badge badge-hot">🔥 热门</div>
+                <div class="game-card-name">龙珠传说</div>
+                <div class="game-card-desc">东方神话</div>
+                <button class="play-btn" onclick="go('slots-dragon')">游玩</button>
+            </div>
+            <div class="game-card">
+                <div class="game-card-icon">🌟</div>
+                <div class="badge" style="background:#555;color:#fff;">VIP</div>
+                <div class="game-card-name">星际争霸</div>
+                <div class="game-card-desc">科幻主题</div>
+                <button class="play-btn" onclick="go('slots-star')">游玩</button>
+            </div>
+            <div class="game-card">
+                <div class="game-card-icon">🃏</div>
+                <div class="badge" style="background:#555;color:#fff;">经典</div>
+                <div class="game-card-name">神秘埃及</div>
+                <div class="game-card-desc">法老宝藏</div>
+                <button class="play-btn" onclick="go('slots-egypt')">游玩</button>
+            </div>
+            <div class="game-card">
+                <div class="game-card-icon">🎪</div>
+                <div class="badge badge-new">✨ 新品</div>
+                <div class="game-card-name">嘉年华</div>
+                <div class="game-card-desc">欢乐派对</div>
+                <button class="play-btn" onclick="go('slots-carnival')">游玩</button>
+            </div>
+            <div class="game-card">
+                <div class="game-card-icon">🏆</div>
+                <div class="badge badge-hot">🔥 热门</div>
+                <div class="game-card-name">黄金猎手</div>
+                <div class="game-card-desc">西部淘金</div>
+                <button class="play-btn" onclick="go('slots-gold')">游玩</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const routes = {
+            'slots-lucky4': '../games/slots-lucky4.html'
+        };
+        function go(id) {
+            if (routes[id]) { window.location.href = routes[id]; }
+            else { alert('该游戏即将上线，敬请期待！'); }
+        }
+    </script>
+</body>
+</html>
