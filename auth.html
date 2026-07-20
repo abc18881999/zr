@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>账号中心 - PURE GOLD LEGEND</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #050508; color: #ffd700;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; padding: 30px 15px;
+        }
+        .auth-card {
+            width: 100%; max-width: 420px;
+            background: linear-gradient(180deg, #1a1405, #0a0804);
+            padding: 30px 25px; border: 2px solid #ffd700; border-radius: 16px;
+            box-shadow: 0 0 40px rgba(255,215,0,0.15);
+        }
+        .logo { text-align: center; font-size: 28px; font-weight: 900; margin-bottom: 6px;
+            text-shadow: 0 0 20px #ffd700; letter-spacing: 2px; }
+        .subtitle { text-align: center; font-size: 12px; color: #b89742; margin-bottom: 24px; }
+        .section-title { font-size: 11px; color: #888; margin: 18px 0 6px; letter-spacing: 1px; text-transform: uppercase; }
+        .input-box {
+            width: 100%; padding: 13px 14px; margin-bottom: 10px;
+            background: #0a0804; border: 1px solid #3d2f0f; color: #fff;
+            border-radius: 8px; font-size: 14px; transition: border-color 0.2s;
+        }
+        .input-box:focus { outline: none; border-color: #ffd700; }
+        .input-box::placeholder { color: #555; }
+        .tg-fields { display: none; }
+        .tg-fields.show { display: block; }
+        .btn {
+            width: 100%; padding: 14px; margin-top: 6px;
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: linear-gradient(180deg, #ffd700, #b8860b); color: #000; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary {
+            background: transparent; border: 1px solid #555; color: #aaa;
+            margin-top: 10px; font-size: 13px;
+        }
+        .btn-secondary:hover { border-color: #ffd700; color: #ffd700; }
+        .msg { margin-top: 14px; padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; display: none; }
+        .msg.ok { background: rgba(0,200,100,0.15); border: 1px solid #00c864; color: #00c864; }
+        .msg.err { background: rgba(255,50,50,0.15); border: 1px solid #ff3232; color: #ff6666; }
+        .footer-links { display: flex; justify-content: space-between; margin-top: 20px; font-size: 12px; color: #555; }
+        .footer-links span { cursor: pointer; } .footer-links span:hover { color: #ffd700; }
+        .logged-in { display: none; text-align: center; }
+        .logged-in .welcome { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+        .logged-in .info-row { background: #0a0804; border: 1px solid #3d2f0f; border-radius: 8px;
+            padding: 12px; margin-bottom: 8px; font-size: 13px; display: flex; justify-content: space-between; }
+        .info-label { color: #888; }
+        .info-val { color: #ffd700; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="auth-card">
+    <div class="logo">👑 PURE GOLD</div>
+    <div class="subtitle">游戏账号中心</div>
+
+    <!-- 已登录状态 -->
+    <div class="logged-in" id="loggedInBox">
+        <div class="welcome">欢迎回来 👋</div>
+        <div class="info-row"><span class="info-label">账号</span><span class="info-val" id="disp_user">-</span></div>
+        <div class="info-row"><span class="info-label">TG用户名</span><span class="info-val" id="disp_tg_user">-</span></div>
+        <div class="info-row"><span class="info-label">余额</span><span class="info-val" id="disp_balance">-</span></div>
+        <button class="btn btn-primary" style="margin-top:20px;" onclick="goHome()">🎮 进入游戏大厅</button>
+        <button class="btn btn-secondary" onclick="logout()">退出登录</button>
+    </div>
+
+    <!-- 登录/注册表单 -->
+    <div id="authForm">
+        <div class="section-title">账号信息</div>
+        <input type="text" id="user" class="input-box" placeholder="账号（字母+数字，4-20位）" maxlength="20">
+        <input type="password" id="pass" class="input-box" placeholder="密码（6位以上）" maxlength="50">
+
+        <!-- 注册专属：TG信息 -->
+        <div class="tg-fields" id="tgFields">
+            <div class="section-title">Telegram 信息（注册必填）</div>
+            <input type="text" id="tg_num" class="input-box" placeholder="TG手机号 如: +8613800138000">
+            <input type="text" id="tg_user" class="input-box" placeholder="TG用户名 如: @yourname">
+            <input type="text" id="tg_id" class="input-box" placeholder="TG数字ID 如: 123456789">
+        </div>
+
+        <button id="mainBtn" class="btn btn-primary" onclick="processAuth()">登录</button>
+        <button id="toggleBtn" class="btn btn-secondary" onclick="toggleMode()">没有账号？去注册</button>
+
+        <div class="msg" id="msgBox"></div>
+
+        <div class="footer-links">
+            <span onclick="goHome()">← 返回大厅</span>
+            <span onclick="alert('请联系 TG: @oyoyf 找回密码')">忘记密码？</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let isLogin = true;
+
+    // ====== 检查是否已登录 ======
+    (function checkLogin() {
+        const token = localStorage.getItem('zr_token');
+        const username = localStorage.getItem('zr_user');
+        if (token && username) {
+            // 向服务器验证 token 并拉取最新信息
+            fetchPlayerInfo(token, username);
+        }
+    })();
+
+    async function fetchPlayerInfo(token, username) {
+        try {
+            const r = await fetch('/api/player/info', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (r.ok) {
+                const data = await r.json();
+                showLoggedIn(data);
+            } else {
+                // token 失效，清除
+                localStorage.removeItem('zr_token');
+                localStorage.removeItem('zr_user');
+            }
+        } catch(e) {
+            // 网络错误时，用本地缓存数据显示
+            const cached = localStorage.getItem('zr_userinfo');
+            if (cached) showLoggedIn(JSON.parse(cached));
+        }
+    }
+
+    function showLoggedIn(data) {
+        document.getElementById('authForm').style.display = 'none';
+        document.getElementById('loggedInBox').style.display = 'block';
+        document.getElementById('disp_user').innerText = data.username || '-';
+        document.getElementById('disp_tg_user').innerText = data.tg_user || '-';
+        document.getElementById('disp_balance').innerText = (data.balance || 0).toLocaleString() + ' 金币';
+        localStorage.setItem('zr_userinfo', JSON.stringify(data));
+        localStorage.setItem('wd_wallet', data.balance || 10000);
+    }
+
+    function toggleMode() {
+        isLogin = !isLogin;
+        document.getElementById('user').value = '';
+        document.getElementById('pass').value = '';
+        document.getElementById('title') && (document.getElementById('title').innerText = isLogin ? '用户登录' : '新用户注册');
+        document.getElementById('mainBtn').innerText = isLogin ? '登录' : '注册账号';
+        document.getElementById('toggleBtn').innerText = isLogin ? '没有账号？去注册' : '已有账号？去登录';
+        document.getElementById('tgFields').className = 'tg-fields' + (isLogin ? '' : ' show');
+        hideMsg();
+    }
+
+    async function processAuth() {
+        const user = document.getElementById('user').value.trim();
+        const pass = document.getElementById('pass').value;
+
+        if (!user || !pass) return showMsg('请完整填写账号和密码', 'err');
+        if (user.length < 4) return showMsg('账号至少4位', 'err');
+        if (pass.length < 6) return showMsg('密码至少6位', 'err');
+
+        const body = { type: isLogin ? 'login' : 'register', user, pass };
+
+        if (!isLogin) {
+            body.tg_num  = document.getElementById('tg_num').value.trim();
+            body.tg_user = document.getElementById('tg_user').value.trim();
+            body.tg_id   = document.getElementById('tg_id').value.trim();
+            if (!body.tg_num || !body.tg_user || !body.tg_id) {
+                return showMsg('注册需填写全部 Telegram 信息', 'err');
+            }
+        }
+
+        document.getElementById('mainBtn').disabled = true;
+        document.getElementById('mainBtn').innerText = '处理中...';
+
+        try {
+            const r = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const data = await r.json();
+
+            if (!r.ok) {
+                showMsg(data.error || '操作失败', 'err');
+            } else if (isLogin) {
+                localStorage.setItem('zr_token', data.token);
+                localStorage.setItem('zr_user', user);
+                showLoggedIn(data.player);
+                showMsg('登录成功！', 'ok');
+            } else {
+                showMsg('注册成功！请登录', 'ok');
+                setTimeout(() => { if (!isLogin) toggleMode(); }, 1000);
+            }
+        } catch(e) {
+            showMsg('网络错误，请稍后重试', 'err');
+        } finally {
+            document.getElementById('mainBtn').disabled = false;
+            document.getElementById('mainBtn').innerText = isLogin ? '登录' : '注册账号';
+        }
+    }
+
+    function showMsg(text, type) {
+        const el = document.getElementById('msgBox');
+        el.innerText = text;
+        el.className = 'msg ' + type;
+        el.style.display = 'block';
+    }
+    function hideMsg() { document.getElementById('msgBox').style.display = 'none'; }
+    function goHome() { window.location.href = '/'; }
+    function logout() {
+        localStorage.removeItem('zr_token');
+        localStorage.removeItem('zr_user');
+        localStorage.removeItem('zr_userinfo');
+        location.reload();
+    }
+</script>
+</body>
+</html>
