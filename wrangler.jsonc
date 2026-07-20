@@ -7,9 +7,8 @@
   },
   "kv_namespaces": [
     {
-      // 把下面的 id 替换成你在 Cloudflare 后台创建的 KV 命名空间 ID
       "binding": "PLAYERS",
-      "id": "在这里填你的KV命名空间ID"
+      "id": "4483803e647c437c874fd814f83b063c"
     }
   ],
   "build": {
