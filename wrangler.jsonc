@@ -1,9 +1,17 @@
 {
   "name": "zr3",
   "compatibility_date": "2026-07-19",
+  "main": "worker.js",
   "assets": {
     "directory": "./"
   },
+  "kv_namespaces": [
+    {
+      // 把下面的 id 替换成你在 Cloudflare 后台创建的 KV 命名空间 ID
+      "binding": "PLAYERS",
+      "id": "在这里填你的KV命名空间ID"
+    }
+  ],
   "build": {
     "command": ""
   }

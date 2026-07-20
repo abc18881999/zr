@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🔧 管理后台 - PURE GOLD LEGEND</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #050508; color: #ffd700; font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; }
+
+        /* ── 登录页 ── */
+        #loginPage {
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+        }
+        .login-card {
+            width: 90%; max-width: 380px; background: #0f0c04;
+            border: 2px solid #ffd700; border-radius: 16px; padding: 35px 25px;
+            box-shadow: 0 0 40px rgba(255,215,0,0.2);
+        }
+        .login-card h2 { text-align: center; font-size: 22px; margin-bottom: 5px; }
+        .login-card p  { text-align: center; font-size: 12px; color: #888; margin-bottom: 25px; }
+        .input-box {
+            width: 100%; padding: 13px 14px; margin-bottom: 12px;
+            background: #0a0804; border: 1px solid #3d2f0f; color: #fff;
+            border-radius: 8px; font-size: 14px;
+        }
+        .input-box:focus { outline: none; border-color: #ffd700; }
+        .btn-gold {
+            width: 100%; padding: 14px; border: none; border-radius: 8px;
+            background: linear-gradient(180deg, #ffd700, #b8860b); color: #000;
+            font-weight: bold; font-size: 15px; cursor: pointer;
+        }
+        .btn-gold:hover { opacity: 0.9; }
+        .err-msg { color: #ff6666; font-size: 13px; text-align: center; margin-top: 10px; min-height: 20px; }
+
+        /* ── 主后台 ── */
+        #adminPage { display: none; }
+
+        .top-bar {
+            background: #0f0c04; border-bottom: 2px solid #3d2f0f;
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .top-bar .brand { font-size: 16px; font-weight: 900; letter-spacing: 1px; }
+        .top-bar .logout-btn {
+            background: transparent; border: 1px solid #555; color: #aaa;
+            padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+        }
+        .top-bar .logout-btn:hover { border-color: #ffd700; color: #ffd700; }
+
+        .tab-bar {
+            display: flex; background: #0a0804; border-bottom: 1px solid #3d2f0f;
+            overflow-x: auto; padding: 0 10px;
+        }
+        .tab-btn {
+            padding: 12px 18px; cursor: pointer; font-size: 13px; font-weight: bold;
+            color: #888; border-bottom: 3px solid transparent; white-space: nowrap;
+            background: none; border-top: none; border-left: none; border-right: none;
+        }
+        .tab-btn.active { color: #ffd700; border-bottom-color: #ffd700; }
+
+        .tab-content { display: none; padding: 20px; max-width: 900px; margin: 0 auto; }
+        .tab-content.active { display: block; }
+
+        /* ── 统计卡片 ── */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .stat-card {
+            background: #0f0c04; border: 1px solid #3d2f0f; border-radius: 12px; padding: 16px;
+            text-align: center;
+        }
+        .stat-num { font-size: 28px; font-weight: 900; color: #ffd700; }
+        .stat-label { font-size: 11px; color: #888; margin-top: 4px; }
+
+        /* ── 玩家表格 ── */
+        .search-bar {
+            display: flex; gap: 10px; margin-bottom: 14px;
+        }
+        .search-bar input {
+            flex: 1; padding: 10px 12px; background: #0a0804; border: 1px solid #3d2f0f;
+            color: #fff; border-radius: 8px; font-size: 13px;
+        }
+        .search-bar input:focus { outline: none; border-color: #ffd700; }
+        .search-bar button {
+            padding: 10px 16px; background: #ffd700; color: #000;
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px;
+        }
+
+        .player-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .player-table th {
+            background: #1a1405; color: #ffd700; padding: 10px 8px;
+            border-bottom: 2px solid #3d2f0f; text-align: left;
+        }
+        .player-table td { padding: 10px 8px; border-bottom: 1px solid #1a1405; color: #ddd; }
+        .player-table tr:hover td { background: rgba(255,215,0,0.04); }
+
+        .badge {
+            display: inline-block; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;
+        }
+        .badge-green { background: rgba(0,200,100,0.15); color: #00c864; border: 1px solid #00c864; }
+
+        .action-btn {
+            padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;
+            cursor: pointer; border: none; margin-right: 5px;
+        }
+        .btn-edit  { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid #ffd700; }
+        .btn-del   { background: rgba(255,50,50,0.15); color: #ff6666; border: 1px solid #ff3232; }
+        .btn-edit:hover { background: rgba(255,215,0,0.3); }
+        .btn-del:hover  { background: rgba(255,50,50,0.3); }
+
+        .empty-tip { text-align: center; color: #555; padding: 40px 0; font-size: 14px; }
+
+        /* ── 设置面板 ── */
+        .setting-group {
+            background: #0f0c04; border: 1px solid #3d2f0f; border-radius: 12px;
+            padding: 20px; margin-bottom: 16px;
+        }
+        .setting-group h3 { font-size: 14px; margin-bottom: 14px; color: #ffd700; }
+        .setting-row { display: flex; gap: 10px; align-items: center; }
+        .setting-row input {
+            flex: 1; padding: 11px 12px; background: #0a0804; border: 1px solid #3d2f0f;
+            color: #fff; border-radius: 8px; font-size: 14px;
+        }
+        .setting-row input:focus { outline: none; border-color: #ffd700; }
+        .setting-row .btn-sm {
+            padding: 11px 18px; background: #ffd700; color: #000;
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px;
+            white-space: nowrap;
+        }
+
+        /* ── 弹窗 ── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            display: none; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: #0f0c04; border: 2px solid #ffd700; border-radius: 16px;
+            padding: 25px; width: 90%; max-width: 420px;
+        }
+        .modal-box h3 { font-size: 16px; margin-bottom: 16px; }
+        .modal-box label { font-size: 12px; color: #888; display: block; margin-bottom: 5px; }
+        .modal-box input {
+            width: 100%; padding: 11px 12px; margin-bottom: 12px;
+            background: #0a0804; border: 1px solid #3d2f0f; color: #fff;
+            border-radius: 8px; font-size: 14px;
+        }
+        .modal-box input:focus { outline: none; border-color: #ffd700; }
+        .modal-info { background: #0a0804; border: 1px solid #3d2f0f; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+        .modal-info-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; border-bottom: 1px solid #1a1405; }
+        .modal-info-row:last-child { border-bottom: none; }
+        .modal-info-row .k { color: #888; } .modal-info-row .v { color: #ffd700; font-weight: bold; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 4px; }
+        .modal-btns button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .modal-btns .ok-btn  { background: linear-gradient(180deg, #ffd700, #b8860b); color: #000; }
+        .modal-btns .no-btn  { background: #222; color: #aaa; }
+
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: #222; color: #ffd700; border: 1px solid #ffd700;
+            padding: 12px 24px; border-radius: 25px; font-size: 14px; font-weight: bold;
+            z-index: 99999; opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<!-- ===== 登录页 ===== -->
+<div id="loginPage">
+    <div class="login-card">
+        <h2>🔧 管理后台</h2>
+        <p>PURE GOLD LEGEND · 后台管理系统</p>
+        <input type="password" id="adminPass" class="input-box" placeholder="管理员密码" onkeydown="if(event.key==='Enter')doAdminLogin()">
+        <button class="btn-gold" onclick="doAdminLogin()">登录后台</button>
+        <div class="err-msg" id="loginErr"></div>
+        <p style="text-align:center;font-size:11px;color:#444;margin-top:14px;">默认密码: admin888 &nbsp;（首次登录后请修改）</p>
+    </div>
+</div>
+
+<!-- ===== 主后台 ===== -->
+<div id="adminPage">
+    <div class="top-bar">
+        <span class="brand">👑 ZR 管理后台</span>
+        <button class="logout-btn" onclick="adminLogout()">退出登录</button>
+    </div>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('overview')">📊 概览</button>
+        <button class="tab-btn" onclick="switchTab('players')">👥 玩家管理</button>
+        <button class="tab-btn" onclick="switchTab('settings')">⚙️ 系统设置</button>
+    </div>
+
+    <!-- 概览 -->
+    <div class="tab-content active" id="tab-overview">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-num" id="statTotal">-</div>
+                <div class="stat-label">总玩家数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="statBalance">-</div>
+                <div class="stat-label">平台总金币</div>
+            </div>
+        </div>
+        <div class="setting-group">
+            <h3>📋 最近注册玩家</h3>
+            <div id="recentList"><div class="empty-tip">加载中...</div></div>
+        </div>
+    </div>
+
+    <!-- 玩家管理 -->
+    <div class="tab-content" id="tab-players">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="搜索账号或TG用户名..." onkeydown="if(event.key==='Enter')renderPlayers()">
+            <button onclick="renderPlayers()">搜索</button>
+        </div>
+        <table class="player-table">
+            <thead>
+                <tr>
+                    <th>账号</th>
+                    <th>TG用户名</th>
+                    <th>余额</th>
+                    <th>注册时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="playerTableBody">
+                <tr><td colspan="5" class="empty-tip">加载中...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 设置 -->
+    <div class="tab-content" id="tab-settings">
+        <div class="setting-group">
+            <h3>🔑 修改管理员密码</h3>
+            <div class="setting-row">
+                <input type="password" id="newAdminPass" placeholder="新管理员密码（6位以上）">
+                <input type="password" id="newAdminPass2" placeholder="再次确认新密码">
+                <button class="btn-sm" onclick="changeAdminPass()">保存</button>
+            </div>
+        </div>
+        <div class="setting-group">
+            <h3>🔄 刷新数据</h3>
+            <button class="btn-sm" style="width:auto;" onclick="loadAllPlayers()">重新加载玩家数据</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 玩家详情弹窗 ===== -->
+<div class="modal-overlay" id="playerModal">
+    <div class="modal-box">
+        <h3 id="modalTitle">玩家详情</h3>
+        <div class="modal-info" id="modalInfo"></div>
+        <label>修改余额</label>
+        <input type="number" id="modalBalance" placeholder="输入新余额">
+        <div class="modal-btns">
+            <button class="ok-btn" onclick="saveBalance()">保存余额</button>
+            <button class="no-btn" onclick="closeModal()">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 删除确认弹窗 ===== -->
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal-box">
+        <h3>⚠️ 确认删除</h3>
+        <p style="color:#aaa;font-size:14px;margin-bottom:20px;">删除后无法恢复，确定要删除玩家 <span id="delUsername" style="color:#ff6666;font-weight:bold;"></span> 吗？</p>
+        <div class="modal-btns">
+            <button class="ok-btn" style="background:linear-gradient(180deg,#ff4444,#aa0000);color:#fff;" onclick="confirmDelete()">确认删除</button>
+            <button class="no-btn" onclick="document.getElementById('deleteModal').classList.remove('show')">取消</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    let adminToken = sessionStorage.getItem('zr_admin_token') || '';
+    let allPlayers = [];
+    let editingUser = '';
+    let deletingUser = '';
+
+    // ===== 初始化 =====
+    (function init() {
+        if (adminToken) {
+            showAdminPage();
+        }
+    })();
+
+    // ===== 登录 =====
+    async function doAdminLogin() {
+        const pass = document.getElementById('adminPass').value;
+        if (!pass) return;
+        document.getElementById('loginErr').innerText = '';
+
+        try {
+            const r = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pass })
+            });
+            const data = await r.json();
+            if (!r.ok) {
+                document.getElementById('loginErr').innerText = data.error || '登录失败';
+                return;
+            }
+            adminToken = data.token;
+            sessionStorage.setItem('zr_admin_token', adminToken);
+            showAdminPage();
+        } catch(e) {
+            document.getElementById('loginErr').innerText = '网络错误，请重试';
+        }
+    }
+
+    function adminLogout() {
+        adminToken = '';
+        sessionStorage.removeItem('zr_admin_token');
+        document.getElementById('adminPage').style.display = 'none';
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('adminPass').value = '';
+    }
+
+    function showAdminPage() {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('adminPage').style.display = 'block';
+        loadAllPlayers();
+    }
+
+    // ===== 加载玩家数据 =====
+    async function loadAllPlayers() {
+        try {
+            const r = await fetch('/api/admin/players', {
+                headers: { 'Authorization': 'Bearer ' + adminToken }
+            });
+            if (r.status === 401) { adminLogout(); return; }
+            const data = await r.json();
+            allPlayers = data.players || [];
+            renderOverview();
+            renderPlayers();
+        } catch(e) {
+            showToast('加载失败，请重试');
+        }
+    }
+
+    // ===== 概览 =====
+    function renderOverview() {
+        document.getElementById('statTotal').innerText = allPlayers.length;
+        const total = allPlayers.reduce((s, p) => s + (p.balance || 0), 0);
+        document.getElementById('statBalance').innerText = total.toLocaleString();
+
+        const recent = [...allPlayers]
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            .slice(0, 5);
+
+        const html = recent.length === 0
+            ? '<div class="empty-tip">暂无玩家数据</div>'
+            : recent.map(p => `
+                <div class="modal-info-row">
+                    <span class="k">${p.username}</span>
+                    <span class="v">${p.tg_user || '-'} &nbsp;·&nbsp; ${(p.balance||0).toLocaleString()} 金币</span>
+                </div>`).join('');
+        document.getElementById('recentList').innerHTML = html;
+    }
+
+    // ===== 玩家列表 =====
+    function renderPlayers() {
+        const kw = document.getElementById('searchInput').value.trim().toLowerCase();
+        const list = kw
+            ? allPlayers.filter(p =>
+                (p.username||'').toLowerCase().includes(kw) ||
+                (p.tg_user||'').toLowerCase().includes(kw))
+            : allPlayers;
+
+        const tbody = document.getElementById('playerTableBody');
+        if (list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty-tip">没有找到玩家</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = list.map(p => `
+            <tr>
+                <td><strong>${p.username}</strong></td>
+                <td>${p.tg_user || '-'}</td>
+                <td><span class="badge badge-green">${(p.balance||0).toLocaleString()}</span></td>
+                <td style="color:#666;font-size:12px;">${formatDate(p.created_at)}</td>
+                <td>
+                    <button class="action-btn btn-edit" onclick="openPlayerModal('${p.username}')">编辑</button>
+                    <button class="action-btn btn-del"  onclick="openDeleteModal('${p.username}')">删除</button>
+                </td>
+            </tr>`).join('');
+    }
+
+    // ===== 玩家详情弹窗 =====
+    function openPlayerModal(username) {
+        const p = allPlayers.find(x => x.username === username);
+        if (!p) return;
+        editingUser = username;
+
+        document.getElementById('modalTitle').innerText = '玩家详情：' + username;
+        document.getElementById('modalBalance').value = p.balance || 0;
+        document.getElementById('modalInfo').innerHTML = `
+            <div class="modal-info-row"><span class="k">账号</span><span class="v">${p.username}</span></div>
+            <div class="modal-info-row"><span class="k">TG用户名</span><span class="v">${p.tg_user || '-'}</span></div>
+            <div class="modal-info-row"><span class="k">TG手机号</span><span class="v">${p.tg_num || '-'}</span></div>
+            <div class="modal-info-row"><span class="k">TG ID</span><span class="v">${p.tg_id || '-'}</span></div>
+            <div class="modal-info-row"><span class="k">当前余额</span><span class="v">${(p.balance||0).toLocaleString()} 金币</span></div>
+            <div class="modal-info-row"><span class="k">注册时间</span><span class="v">${formatDate(p.created_at)}</span></div>
+            <div class="modal-info-row"><span class="k">最后登录</span><span class="v">${formatDate(p.last_login)}</span></div>
+        `;
+        document.getElementById('playerModal').classList.add('show');
+    }
+
+    function closeModal() {
+        document.getElementById('playerModal').classList.remove('show');
+    }
+
+    async function saveBalance() {
+        const balance = parseFloat(document.getElementById('modalBalance').value);
+        if (isNaN(balance) || balance < 0) return showToast('请输入有效余额');
+
+        try {
+            const r = await fetch('/api/admin/balance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + adminToken
+                },
+                body: JSON.stringify({ username: editingUser, balance })
+            });
+            const data = await r.json();
+            if (r.ok) {
+                const p = allPlayers.find(x => x.username === editingUser);
+                if (p) p.balance = data.balance;
+                closeModal();
+                renderPlayers();
+                renderOverview();
+                showToast('✅ 余额已更新：' + data.balance.toLocaleString());
+            } else {
+                showToast('❌ ' + (data.error || '操作失败'));
+            }
+        } catch(e) {
+            showToast('网络错误，请重试');
+        }
+    }
+
+    // ===== 删除弹窗 =====
+    function openDeleteModal(username) {
+        deletingUser = username;
+        document.getElementById('delUsername').innerText = username;
+        document.getElementById('deleteModal').classList.add('show');
+    }
+
+    async function confirmDelete() {
+        try {
+            const r = await fetch('/api/admin/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + adminToken
+                },
+                body: JSON.stringify({ username: deletingUser })
+            });
+            if (r.ok) {
+                allPlayers = allPlayers.filter(p => p.username !== deletingUser);
+                document.getElementById('deleteModal').classList.remove('show');
+                renderPlayers();
+                renderOverview();
+                showToast('✅ 玩家已删除');
+            } else {
+                showToast('❌ 删除失败');
+            }
+        } catch(e) {
+            showToast('网络错误，请重试');
+        }
+    }
+
+    // ===== 修改管理员密码 =====
+    async function changeAdminPass() {
+        const p1 = document.getElementById('newAdminPass').value;
+        const p2 = document.getElementById('newAdminPass2').value;
+        if (!p1 || p1.length < 6) return showToast('密码至少6位');
+        if (p1 !== p2) return showToast('两次密码不一致');
+
+        try {
+            const r = await fetch('/api/admin/set-pass', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + adminToken
+                },
+                body: JSON.stringify({ new_pass: p1 })
+            });
+            const data = await r.json();
+            if (r.ok) {
+                document.getElementById('newAdminPass').value = '';
+                document.getElementById('newAdminPass2').value = '';
+                showToast('✅ 管理员密码已修改');
+            } else {
+                showToast('❌ ' + (data.error || '修改失败'));
+            }
+        } catch(e) {
+            showToast('网络错误，请重试');
+        }
+    }
+
+    // ===== Tab 切换 =====
+    function switchTab(name) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            const tabs = ['overview', 'players', 'settings'];
+            b.classList.toggle('active', tabs[i] === name);
+        });
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+    }
+
+    // ===== 工具 =====
+    function formatDate(iso) {
+        if (!iso) return '-';
+        const d = new Date(iso);
+        return d.getFullYear() + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' +
+               String(d.getDate()).padStart(2,'0') + ' ' +
+               String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+        const el = document.getElementById('toast');
+        el.innerText = msg;
+        el.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+    }
+</script>
+</body>
+</html>
