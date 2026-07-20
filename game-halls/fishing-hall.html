@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🐟 捕鱼大厅</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #050508; color: #ffd700; font-family: sans-serif; overflow-x: hidden; }
+        .app-container { width: 100%; max-width: 450px; margin: 0 auto; background: linear-gradient(180deg, rgba(20,15,5,0.85) 0%, rgba(5,5,8,0.98) 100%); border-left: 2px solid #b89742; border-right: 2px solid #b89742; padding: 20px; min-height: 100vh; }
+        .hall-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: rgba(10,8,5,0.8); border: 1px solid #ffd700; border-radius: 8px; }
+        .back-btn { background: none; border: none; color: #ffd700; font-size: 20px; cursor: pointer; }
+        .hall-title { font-size: 20px; font-weight: 900; text-shadow: 0 0 10px #ffd700; }
+        .games-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 30px; }
+        .game-card { background: linear-gradient(135deg, #1a1405 0%, #050508 100%); border: 2px solid #ffd700; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 15px rgba(255,215,0,0.1); }
+        .game-card:hover { transform: translateY(-5px) scale(1.02); border-color: #ffed4e; box-shadow: 0 5px 25px rgba(255,215,0,0.3); }
+        .game-card.hot { border-color: #ff4500; box-shadow: 0 0 15px rgba(255,69,0,0.3); }
+        .game-card-icon { font-size: 40px; margin-bottom: 10px; }
+        .game-card-name { font-size: 14px; font-weight: bold; color: #ffd700; margin-bottom: 5px; }
+        .game-card-desc { font-size: 11px; color: #888; margin-bottom: 5px; }
+        .badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-bottom: 8px; }
+        .badge-hot { background: #ff4500; color: #fff; }
+        .badge-new { background: #00aa00; color: #fff; }
+        .badge-classic { background: #555; color: #fff; }
+        .play-btn { background: linear-gradient(180deg, #ffd700, #b8860b); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 12px; width: 100%; }
+        .play-btn:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="hall-header">
+            <button class="back-btn" onclick="history.back()">← 返回</button>
+            <div class="hall-title">🐟 捕鱼大厅</div>
+            <div style="width: 30px;"></div>
+        </div>
+        <div class="games-list">
+            <div class="game-card hot">
+                <div class="game-card-icon">🦈</div>
+                <div class="badge badge-hot">🔥 热门</div>
+                <div class="game-card-name">鲨鱼战场</div>
+                <div class="game-card-desc">限时猎鲨夺金</div>
+                <button class="play-btn" onclick="go('fishing-shark')">游玩</button>
+            </div>
+            <div class="game-card">
+                <div class="game-card-icon">🐬</div>
+                <div class="badge badge-new">✨ 新品</div>
+                <div class="game-card-name">深海猎手</div>
+                <div class="game-card-desc">深蓝宝藏追击</div>
+                <button class="play-btn" onclick="soon()">游玩</button>
+            </div>
+            <div class="game-card">
+                <div class="game-card-icon">💎</div>
+                <div class="badge badge-classic">经典</div>
+                <div class="game-card-name">美人鱼</div>
+                <div class="game-card-desc">海底珍珠秘境</div>
+                <button class="play-btn" onclick="soon()">游玩</button>
+            </div>
+            <div class="game-card hot">
+                <div class="game-card-icon">🎣</div>
+                <div class="badge badge-hot">🔥 热门</div>
+                <div class="game-card-name">捕鱼大师</div>
+                <div class="game-card-desc">大师连击模式</div>
+                <button class="play-btn" onclick="soon()">游玩</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function go(id) {
+            if (id === 'fishing-shark') {
+                window.location.href = '../games/fishing-shark.html';
+            }
+        }
+        function soon() {
+            alert('该游戏即将上线，敬请期待！');
+        }
+    </script>
+</body>
+</html>

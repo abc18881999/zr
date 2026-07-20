@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>幸运四叶老虎机</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #050508; color: #ffd700; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .game-container { width: 100%; max-width: 450px; margin: 0 auto; min-height: 100vh; padding: 18px 16px 90px; background: radial-gradient(circle at top, rgba(20,55,20,0.65), rgba(5,5,8,0.98) 55%), linear-gradient(180deg, rgba(20,15,5,0.9), rgba(5,5,8,0.98)); border-left: 2px solid #b89742; border-right: 2px solid #b89742; }
+        .game-header, .panel, .footer-bar { background: rgba(9, 14, 9, 0.92); border: 1px solid #ffd700; border-radius: 14px; box-shadow: 0 0 18px rgba(255,215,0,0.15); }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; margin-bottom: 14px; }
+        .back-btn { background: none; border: none; color: #ffd700; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .game-title { font-size: 18px; font-weight: 900; text-shadow: 0 0 12px rgba(76, 255, 120, 0.6); }
+        .balance { font-size: 13px; color: #fff; }
+        .panel { padding: 14px; margin-bottom: 14px; }
+        .top-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-box { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px; text-align: center; }
+        .stat-label { font-size: 11px; color: #9fbf7b; margin-bottom: 4px; }
+        .stat-value { font-size: 18px; color: #fff; font-weight: 900; }
+        .bet-selector { display: flex; gap: 8px; margin-top: 12px; }
+        .bet-btn { flex: 1; padding: 10px; border-radius: 999px; border: 1px solid #5ad45a; background: rgba(31, 69, 31, 0.9); color: #dfffd3; font-weight: bold; cursor: pointer; }
+        .bet-btn.active { background: linear-gradient(180deg, #7dff7d, #1d9c3b); color: #082108; box-shadow: 0 0 12px rgba(95,255,95,0.45); }
+        .machine-shell { position: relative; background: linear-gradient(180deg, rgba(17,36,17,0.95), rgba(7,10,7,0.98)); border: 2px solid #d7ff8d; border-radius: 22px; padding: 18px 14px 24px; box-shadow: inset 0 0 20px rgba(144,255,144,0.12), 0 0 24px rgba(255,215,0,0.15); overflow: hidden; }
+        .machine-shell::before { content: '🍀 LUCKY 4'; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-size: 12px; letter-spacing: 3px; color: #d7ff8d; }
+        .reels { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+        .payline { position: absolute; left: -4px; right: -4px; top: 50%; height: 52px; transform: translateY(-50%); border-top: 2px solid rgba(255,215,0,0.8); border-bottom: 2px solid rgba(255,215,0,0.8); box-shadow: 0 0 15px rgba(255,215,0,0.35); pointer-events: none; }
+        .reel { background: linear-gradient(180deg, #0f1c0f, #060806); border: 2px solid #5ad45a; border-radius: 14px; padding: 8px; min-height: 180px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+        .reel.spinning { filter: blur(1.2px); transform: scale(0.99); }
+        .symbol { height: 48px; border-radius: 10px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 32px; border: 1px solid rgba(255,255,255,0.06); }
+        .symbol.pay { background: linear-gradient(180deg, rgba(255,215,0,0.18), rgba(255,255,255,0.05)); border-color: rgba(255,215,0,0.3); }
+        .paytable { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 14px; font-size: 12px; color: #d7ff8d; }
+        .pay-item { background: rgba(255,255,255,0.04); padding: 8px; border-radius: 10px; display: flex; justify-content: space-between; }
+        .spin-btn { width: 100%; margin-top: 16px; border: none; border-radius: 16px; padding: 16px; font-size: 26px; font-weight: 900; letter-spacing: 2px; color: #0e1706; background: linear-gradient(180deg, #ffe85a, #c7a100); box-shadow: 0 8px 20px rgba(255,215,0,0.3); cursor: pointer; }
+        .spin-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+        .message { text-align: center; font-size: 14px; min-height: 22px; color: #fff; margin-top: 12px; }
+        .footer-bar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 450px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(5,5,8,0.98); border-bottom: none; border-radius: 14px 14px 0 0; }
+        .footer-label { font-size: 11px; color: #9fbf7b; }
+        .footer-value { font-size: 18px; color: #fff; font-weight: 900; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <button class="back-btn" onclick="history.back()">← 返回</button>
+            <div class="game-title">🍀 幸运四叶老虎机</div>
+            <div class="balance" id="balanceTop">余额: 10000</div>
+        </div>
+
+        <div class="panel">
+            <div class="top-stats">
+                <div class="stat-box"><div class="stat-label">固定线路</div><div class="stat-value">中线中奖</div></div>
+                <div class="stat-box"><div class="stat-label">上次赢分</div><div class="stat-value" id="lastWin">0</div></div>
+            </div>
+            <div class="bet-selector">
+                <button class="bet-btn active" data-bet="50">50</button>
+                <button class="bet-btn" data-bet="100">100</button>
+                <button class="bet-btn" data-bet="200">200</button>
+            </div>
+        </div>
+
+        <div class="panel machine-shell">
+            <div class="reels" id="reels">
+                <div class="payline"></div>
+                <div class="reel" id="reel0"></div>
+                <div class="reel" id="reel1"></div>
+                <div class="reel" id="reel2"></div>
+            </div>
+            <div class="paytable">
+                <div class="pay-item"><span>🍀 x3</span><strong>20倍</strong></div>
+                <div class="pay-item"><span>💎 x3</span><strong>15倍</strong></div>
+                <div class="pay-item"><span>⭐ x3</span><strong>10倍</strong></div>
+                <div class="pay-item"><span>🔔 x3</span><strong>8倍</strong></div>
+                <div class="pay-item"><span>🌸 x3</span><strong>6倍</strong></div>
+                <div class="pay-item"><span>🍒 x3</span><strong>5倍</strong></div>
+                <div class="pay-item"><span>任意两连</span><strong>1倍</strong></div>
+                <div class="pay-item"><span>单注</span><strong id="betLabel">50</strong></div>
+            </div>
+            <button class="spin-btn" id="spinBtn">SPIN</button>
+            <div class="message" id="message">三轴同符大奖，任意两连返还单注。</div>
+        </div>
+    </div>
+
+    <div class="footer-bar">
+        <div>
+            <div class="footer-label">钱包余额</div>
+            <div class="footer-value" id="balanceBottom">10000</div>
+        </div>
+        <div>
+            <div class="footer-label">当前下注</div>
+            <div class="footer-value" id="footerBet">50</div>
+        </div>
+    </div>
+
+    <script>
+        let balance = parseFloat(localStorage.getItem('wd_wallet')) || 10000;
+        const symbols = ['🍀', '🌸', '💎', '⭐', '🍒', '🔔'];
+        const payoutMap = { '🍀': 20, '💎': 15, '⭐': 10, '🔔': 8, '🌸': 6, '🍒': 5 };
+        const reelEls = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
+        let currentBet = 50;
+        let spinning = false;
+        let audioCtx;
+
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function tone(freq, start, duration, type = 'sine', gainValue = 0.05) {
+            const ctx = getAudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(gainValue, start + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + duration + 0.02);
+        }
+
+        function playSound(type) {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+            if (type === 'spin') {
+                tone(120, now, 0.28, 'sawtooth', 0.04);
+                tone(90, now + 0.08, 0.34, 'triangle', 0.035);
+                tone(75, now + 0.15, 0.4, 'square', 0.025);
+            } else if (type === 'click') {
+                tone(420, now, 0.05, 'square', 0.06);
+                tone(240, now + 0.03, 0.07, 'triangle', 0.04);
+            } else if (type === 'win') {
+                [520, 680, 860, 1040].forEach((f, i) => tone(f, now + i * 0.08, 0.16, 'triangle', 0.07));
+            } else if (type === 'lose') {
+                tone(180, now, 0.18, 'sawtooth', 0.05);
+                tone(110, now + 0.12, 0.28, 'triangle', 0.04);
+            } else if (type === 'deal') {
+                tone(620, now, 0.04, 'square', 0.05);
+            }
+        }
+
+        function updateBalance() {
+            document.getElementById('balanceTop').textContent = `余额: ${balance.toFixed(2)}`;
+            document.getElementById('balanceBottom').textContent = balance.toFixed(2);
+            document.getElementById('betLabel').textContent = currentBet;
+            document.getElementById('footerBet').textContent = currentBet;
+            localStorage.setItem('wd_wallet', balance.toFixed(2));
+        }
+
+        function randomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        function columnFor(target) {
+            return [randomSymbol(), target, randomSymbol()];
+        }
+
+        function renderReel(index, data) {
+            reelEls[index].innerHTML = data.map((symbol, row) => `<div class="symbol ${row === 1 ? 'pay' : ''}">${symbol}</div>`).join('');
+        }
+
+        function initReels() {
+            reelEls.forEach((_, index) => renderReel(index, [randomSymbol(), randomSymbol(), randomSymbol()]));
+        }
+
+        function evaluate(payline) {
+            const counts = {};
+            payline.forEach(symbol => { counts[symbol] = (counts[symbol] || 0) + 1; });
+            const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+            if (entries[0][1] === 3) {
+                const win = currentBet * payoutMap[entries[0][0]];
+                return { win, text: `${entries[0][0]} 三连！赢得 ${win.toFixed(2)}` };
+            }
+            if (entries[0][1] === 2) {
+                const win = currentBet;
+                return { win, text: `${entries[0][0]} 双连返奖！赢得 ${win.toFixed(2)}` };
+            }
+            return { win: 0, text: '未中奖，再转一次试试手气！' };
+        }
+
+        function startSpin() {
+            if (spinning) return;
+            if (balance < currentBet) {
+                document.getElementById('message').textContent = '余额不足，无法旋转。';
+                playSound('lose');
+                return;
+            }
+            spinning = true;
+            balance -= currentBet;
+            updateBalance();
+            document.getElementById('lastWin').textContent = '0';
+            document.getElementById('message').textContent = '幸运转轴高速运转中...';
+            document.getElementById('spinBtn').disabled = true;
+            playSound('spin');
+
+            const targets = [randomSymbol(), randomSymbol(), randomSymbol()];
+            const payline = [...targets];
+            const intervals = [];
+
+            reelEls.forEach((reel, index) => {
+                reel.classList.add('spinning');
+                intervals[index] = setInterval(() => {
+                    renderReel(index, [randomSymbol(), randomSymbol(), randomSymbol()]);
+                }, 80);
+                setTimeout(() => {
+                    clearInterval(intervals[index]);
+                    renderReel(index, columnFor(targets[index]));
+                    reel.classList.remove('spinning');
+                    playSound('click');
+                    if (index === 2) {
+                        const result = evaluate(payline);
+                        if (result.win > 0) {
+                            balance += result.win;
+                            document.getElementById('lastWin').textContent = result.win.toFixed(2);
+                            document.getElementById('message').textContent = result.text;
+                            playSound('win');
+                        } else {
+                            document.getElementById('message').textContent = result.text;
+                            playSound('lose');
+                        }
+                        updateBalance();
+                        spinning = false;
+                        document.getElementById('spinBtn').disabled = false;
+                    }
+                }, 1300 + index * 420);
+            });
+        }
+
+        document.querySelectorAll('.bet-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (spinning) return;
+                document.querySelectorAll('.bet-btn').forEach(item => item.classList.remove('active'));
+                btn.classList.add('active');
+                currentBet = parseInt(btn.dataset.bet, 10);
+                updateBalance();
+                playSound('click');
+            });
+        });
+
+        document.getElementById('spinBtn').addEventListener('click', startSpin);
+        initReels();
+        updateBalance();
+    </script>
+</body>
+</html>

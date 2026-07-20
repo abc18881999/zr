@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>快速百家乐</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #050508; color: #ffd700; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .game-container { width: 100%; max-width: 450px; margin: 0 auto; min-height: 100vh; padding: 18px 16px 90px; background: radial-gradient(circle at top, rgba(45, 80, 135, 0.32), rgba(5,5,8,0.98) 56%), linear-gradient(180deg, rgba(18,14,5,0.92), rgba(5,5,8,0.98)); border-left: 2px solid #b89742; border-right: 2px solid #b89742; }
+        .game-header, .panel, .footer-bar { background: rgba(9, 16, 24, 0.94); border: 1px solid #ffd700; border-radius: 14px; box-shadow: 0 0 18px rgba(255,215,0,0.12); }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; margin-bottom: 14px; }
+        .back-btn { background: none; border: none; color: #ffd700; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .game-title { font-size: 18px; font-weight: 900; text-shadow: 0 0 12px rgba(255,215,0,0.4); }
+        .balance { font-size: 13px; color: #fff; }
+        .panel { padding: 14px; margin-bottom: 14px; }
+        .roadmap { display: flex; gap: 8px; flex-wrap: wrap; min-height: 28px; }
+        .road-dot { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; }
+        .banker-dot { background: #d43d3d; }
+        .player-dot { background: #3489ff; }
+        .tie-dot { background: #1da55a; }
+        .table { display: grid; gap: 12px; }
+        .side-box { border-radius: 12px; padding: 12px; min-height: 132px; background: rgba(255,255,255,0.04); }
+        .side-title { display: flex; justify-content: space-between; font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+        .cards { display: flex; gap: 8px; flex-wrap: wrap; min-height: 68px; }
+        .card { min-width: 52px; padding: 10px 8px; border-radius: 10px; background: linear-gradient(180deg, #f7f1de, #fff); color: #111; font-weight: 800; text-align: center; opacity: 0; transform: translateX(-24px); transition: all 0.28s ease; }
+        .card.show { opacity: 1; transform: translateX(0); }
+        .total { margin-top: 8px; font-size: 13px; color: #ffd700; }
+        .choice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .choice-btn { padding: 12px; border-radius: 12px; border: 1px solid rgba(255,215,0,0.28); background: rgba(255,255,255,0.05); color: #f9f3d7; font-weight: 700; cursor: pointer; }
+        .choice-btn small { display: block; opacity: 0.8; margin-top: 4px; }
+        .choice-btn.active { background: linear-gradient(180deg, #ffe88a, #d4aa1e); color: #201602; box-shadow: 0 0 14px rgba(255,215,0,0.25); }
+        .bet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+        .deal-btn { width: 100%; margin-top: 14px; padding: 15px; border: none; border-radius: 16px; font-size: 24px; font-weight: 900; color: #201602; background: linear-gradient(180deg, #ffe072, #d4aa1e); cursor: pointer; }
+        .deal-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .message { min-height: 24px; margin-top: 10px; text-align: center; font-size: 14px; color: #fff; }
+        .footer-bar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 450px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(5,5,8,0.98); border-bottom: none; border-radius: 14px 14px 0 0; }
+        .footer-label { font-size: 11px; color: #d1b261; }
+        .footer-value { font-size: 18px; color: #fff; font-weight: 900; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <button class="back-btn" onclick="history.back()">← 返回</button>
+            <div class="game-title">⚡ 快速百家乐</div>
+            <div class="balance" id="balanceTop">余额: 10000</div>
+        </div>
+
+        <div class="panel">
+            <div class="roadmap" id="roadmap"></div>
+        </div>
+
+        <div class="panel table">
+            <div class="side-box">
+                <div class="side-title"><span>闲家</span><span id="playerStatus">待发牌</span></div>
+                <div class="cards" id="playerCards"></div>
+                <div class="total" id="playerTotal">点数：-</div>
+            </div>
+            <div class="side-box">
+                <div class="side-title"><span>庄家</span><span id="bankerStatus">待发牌</span></div>
+                <div class="cards" id="bankerCards"></div>
+                <div class="total" id="bankerTotal">点数：-</div>
+            </div>
+            <div class="message" id="message">选择下注方与金额，点击发牌。</div>
+        </div>
+
+        <div class="panel">
+            <div class="choice-grid">
+                <button class="choice-btn active type-btn" data-type="player">闲<small>1.95x</small></button>
+                <button class="choice-btn type-btn" data-type="banker">庄<small>1.9x</small></button>
+                <button class="choice-btn type-btn" data-type="tie">和<small>8x</small></button>
+            </div>
+            <div class="bet-grid">
+                <button class="choice-btn active bet-btn" data-bet="50">50</button>
+                <button class="choice-btn bet-btn" data-bet="100">100</button>
+                <button class="choice-btn bet-btn" data-bet="200">200</button>
+                <button class="choice-btn bet-btn" data-bet="500">500</button>
+            </div>
+            <button class="deal-btn" id="dealBtn">开始发牌</button>
+        </div>
+    </div>
+
+    <div class="footer-bar">
+        <div><div class="footer-label">钱包余额</div><div class="footer-value" id="balanceBottom">10000</div></div>
+        <div><div class="footer-label">本局下注</div><div class="footer-value" id="betView">50 / 闲</div></div>
+    </div>
+
+    <script>
+        let balance = parseFloat(localStorage.getItem('wd_wallet')) || 10000;
+        let currentBet = 50;
+        let currentType = 'player';
+        let dealing = false;
+        let audioCtx;
+        const road = [];
+        const suits = ['♠', '♥', '♣', '♦'];
+        const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function tone(freq, start, duration, type = 'sine', gainValue = 0.05) {
+            const ctx = getAudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(gainValue, start + 0.008);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + duration + 0.02);
+        }
+
+        function playSound(type) {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+            if (type === 'deal' || type === 'click') {
+                tone(520, now, 0.04, 'square', 0.06);
+            } else if (type === 'win') {
+                [620, 780, 980].forEach((f, i) => tone(f, now + i * 0.08, 0.15, 'triangle', 0.07));
+            } else if (type === 'lose') {
+                tone(180, now, 0.2, 'sawtooth', 0.05);
+                tone(120, now + 0.12, 0.22, 'triangle', 0.04);
+            }
+        }
+
+        function typeText(type) {
+            return ({ player: '闲', banker: '庄', tie: '和' })[type];
+        }
+
+        function updateBalance() {
+            document.getElementById('balanceTop').textContent = `余额: ${balance.toFixed(2)}`;
+            document.getElementById('balanceBottom').textContent = balance.toFixed(2);
+            document.getElementById('betView').textContent = `${currentBet} / ${typeText(currentType)}`;
+            localStorage.setItem('wd_wallet', balance.toFixed(2));
+        }
+
+        function drawCard() {
+            const rank = ranks[Math.floor(Math.random() * ranks.length)];
+            const suit = suits[Math.floor(Math.random() * suits.length)];
+            return { rank, suit, label: `${rank}${suit}` };
+        }
+
+        function cardValue(card) {
+            if (card.rank === 'A') return 1;
+            if (['10', 'J', 'Q', 'K'].includes(card.rank)) return 0;
+            return parseInt(card.rank, 10);
+        }
+
+        function handTotal(cards) {
+            return cards.reduce((sum, card) => sum + cardValue(card), 0) % 10;
+        }
+
+        function renderCard(containerId, card) {
+            const container = document.getElementById(containerId);
+            const cardEl = document.createElement('div');
+            cardEl.className = 'card';
+            cardEl.textContent = card.label;
+            container.appendChild(cardEl);
+            requestAnimationFrame(() => cardEl.classList.add('show'));
+        }
+
+        function updateTotals(playerCards, bankerCards) {
+            document.getElementById('playerTotal').textContent = `点数：${handTotal(playerCards)}`;
+            document.getElementById('bankerTotal').textContent = `点数：${handTotal(bankerCards)}`;
+        }
+
+        function clearBoard() {
+            document.getElementById('playerCards').innerHTML = '';
+            document.getElementById('bankerCards').innerHTML = '';
+            document.getElementById('playerTotal').textContent = '点数：-';
+            document.getElementById('bankerTotal').textContent = '点数：-';
+            document.getElementById('playerStatus').textContent = '待发牌';
+            document.getElementById('bankerStatus').textContent = '待发牌';
+        }
+
+        function renderRoad() {
+            const roadmap = document.getElementById('roadmap');
+            roadmap.innerHTML = road.map(item => `<div class="road-dot ${item}-dot">${item === 'player' ? '闲' : item === 'banker' ? '庄' : '和'}</div>`).join('');
+        }
+
+        function updateRoad(winner) {
+            road.unshift(winner);
+            if (road.length > 8) road.pop();
+            renderRoad();
+        }
+
+        function resolveGame(playerCards, bankerCards) {
+            const playerTotal = handTotal(playerCards);
+            const bankerTotal = handTotal(bankerCards);
+            let winner = 'tie';
+            if (playerTotal > bankerTotal) winner = 'player';
+            if (bankerTotal > playerTotal) winner = 'banker';
+
+            document.getElementById('playerStatus').textContent = winner === 'player' ? '胜' : winner === 'tie' ? '和' : '负';
+            document.getElementById('bankerStatus').textContent = winner === 'banker' ? '胜' : winner === 'tie' ? '和' : '负';
+            updateRoad(winner);
+
+            if (currentType === winner) {
+                const multiplier = winner === 'tie' ? 8 : winner === 'player' ? 1.95 : 1.9;
+                const payout = currentBet * multiplier;
+                balance += payout;
+                document.getElementById('message').textContent = `${winner === 'player' ? '闲' : winner === 'banker' ? '庄' : '和'}赢！派奖 ${payout.toFixed(2)}。`;
+                playSound('win');
+            } else {
+                document.getElementById('message').textContent = `${winner === 'player' ? '闲' : winner === 'banker' ? '庄' : '和'}赢，本局未命中。`;
+                playSound('lose');
+            }
+            updateBalance();
+            dealing = false;
+            document.getElementById('dealBtn').disabled = false;
+        }
+
+        function startRound() {
+            if (dealing) return;
+            if (balance < currentBet) {
+                document.getElementById('message').textContent = '余额不足，无法下注。';
+                playSound('lose');
+                return;
+            }
+            dealing = true;
+            balance -= currentBet;
+            updateBalance();
+            document.getElementById('dealBtn').disabled = true;
+            document.getElementById('message').textContent = '发牌中...';
+            clearBoard();
+
+            const playerCards = [drawCard(), drawCard()];
+            const bankerCards = [drawCard(), drawCard()];
+            const schedule = [
+                () => { renderCard('playerCards', playerCards[0]); updateTotals([playerCards[0]], []); },
+                () => { renderCard('bankerCards', bankerCards[0]); updateTotals([playerCards[0]], [bankerCards[0]]); },
+                () => { renderCard('playerCards', playerCards[1]); updateTotals(playerCards, [bankerCards[0]]); },
+                () => { renderCard('bankerCards', bankerCards[1]); updateTotals(playerCards, bankerCards); }
+            ];
+
+            schedule.forEach((fn, index) => {
+                setTimeout(() => { playSound('deal'); fn(); }, 300 * (index + 1));
+            });
+
+            setTimeout(() => {
+                const natural = handTotal(playerCards) >= 8 || handTotal(bankerCards) >= 8;
+                let delay = 0;
+                if (!natural && handTotal(playerCards) <= 5) {
+                    const card = drawCard();
+                    playerCards.push(card);
+                    delay += 320;
+                    setTimeout(() => { playSound('deal'); renderCard('playerCards', card); updateTotals(playerCards, bankerCards); }, 1320);
+                }
+                if (!natural && handTotal(bankerCards) <= 5) {
+                    const card = drawCard();
+                    bankerCards.push(card);
+                    delay += 320;
+                    setTimeout(() => { playSound('deal'); renderCard('bankerCards', card); updateTotals(playerCards, bankerCards); }, 1320 + (playerCards.length === 3 ? 320 : 0));
+                }
+                setTimeout(() => resolveGame(playerCards, bankerCards), 1640 + delay);
+            }, 1300);
+        }
+
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (dealing) return;
+                document.querySelectorAll('.type-btn').forEach(item => item.classList.remove('active'));
+                btn.classList.add('active');
+                currentType = btn.dataset.type;
+                updateBalance();
+                playSound('click');
+            });
+        });
+
+        document.querySelectorAll('.bet-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (dealing) return;
+                document.querySelectorAll('.bet-btn').forEach(item => item.classList.remove('active'));
+                btn.classList.add('active');
+                currentBet = parseInt(btn.dataset.bet, 10);
+                updateBalance();
+                playSound('click');
+            });
+        });
+
+        document.getElementById('dealBtn').addEventListener('click', startRound);
+        updateBalance();
+        renderRoad();
+    </script>
+</body>
+</html>

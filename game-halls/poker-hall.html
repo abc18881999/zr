@@ -39,7 +39,20 @@
         </div>
     </div>
     <script>
-        function playGame(gameId) { alert('进入: ' + gameId); }
+        const gameRoutes = {
+            'texas':          '../games/poker-texas.html',
+            'bulls':          '../games/poker-bulls.html',
+            'landlord':       '../games/poker-landlord.html',
+            'threekings':     '../games/poker-threekings.html',
+            'mahjong':        '../games/poker-mahjong.html',
+            'royal-poker':    '../games/poker-royal.html',
+            'star-tournament':'../games/poker-star.html'
+        };
+        function playGame(gameId) {
+            const url = gameRoutes[gameId];
+            if (url) { window.location.href = url; }
+            else { alert('该游戏即将上线，敬请期待！'); }
+        }
     </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>👑 PURE GOLD LEGEND 3x5 SLOTS 👑</title>
+    <title>👑 游戏大厅 - PURE GOLD LEGEND 👑</title>
     <style>
         /* ================= 💎 全局与重置 ================= */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
@@ -19,73 +19,18 @@
             background: linear-gradient(180deg, rgba(20,15,5,0.85) 0%, rgba(5,5,8,0.98) 100%);
             border-left: 2px solid #b89742; border-right: 2px solid #b89742;
             padding: 20px; display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,0,0,0.9);
-            position: relative; padding-bottom: 120px; perspective: 1400px;
+            position: relative; perspective: 1400px;
         }
-
-        .page { display: none; flex-direction: column; flex: 1; margin-top: 50px; z-index: 10;}
-        .page.active { display: flex; }
-
-        /* ================= 🌟 真实 3D 金币引擎 ================= */
-        .wangda-coin-scene { position: relative; transform-style: preserve-3d; display: inline-block; }
-        
-        .coin-container-3d {
-            position: relative; transform-style: preserve-3d;
-            animation: rotateCoin 4s linear infinite; width: 100%; height: 100%;
-        }
-
-        .light-sweep { position: absolute; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; z-index: 10;}
-        .sweep-line {
-            position: absolute; width: 120%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 235, 160, 0.45), transparent);
-            animation: sweepLight 4s ease-in-out infinite;
-        }
-
-        .coin-face {
-            position: absolute; width: 100%; height: 100%; border-radius: 50%;
-            background-size: cover; background-position: center; backface-visibility: hidden;
-            box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.5);
-        }
-        
-        .coin-edge-segment {
-            position: absolute; backface-visibility: hidden;
-            background: linear-gradient(to right, #8b6508 0%, #ffd700 50%, #8b6508 100%);
-            border-right: 1px solid rgba(0, 0, 0, 0.5);
-        }
-
-        .coin-base {
-            position: absolute; width: 160%; height: 30%; left: -30%; bottom: -15%;
-            transform: rotateX(80deg); border-radius: 50%; z-index: -1;
-            background: radial-gradient(ellipse at center, #ffd700 0%, #b8860b 60%, #8b6508 100%);
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6), 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .coin-base::before {
-            content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%;
-            border: 2px solid #ffeb80; top: -2px; left: -2px; box-shadow: inset 0 0 15px rgba(255, 235, 128, 0.5);
-        }
-
-        @keyframes rotateCoin { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
-        @keyframes sweepLight { 0% { transform: translateX(-150%) skewX(-20deg); } 50%, 100% { transform: translateX(150%) skewX(-20deg); } }
-
-        /* ======== 抖动呼吸特效 ======== */
-        @keyframes textShake {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-4px) rotate(-2deg); text-shadow: 0 0 25px #fff; }
-            50% { transform: translateY(0) rotate(0deg); }
-            75% { transform: translateY(4px) rotate(2deg); text-shadow: 0 0 15px #ffd700; }
-        }
-        .shake-text {
-            display: inline-block;
-            animation: textShake 2s infinite ease-in-out;
-            font-size: 28px !important;
-            font-weight: 900! important;
-        }
-
-        /* 粒子容器 */
-        #particleBox { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: 1; overflow: hidden;}
 
         /* ================= 🍔 导航与菜单 ================= */
         .top-nav-fixed { position: absolute; top: 15px; left: 15px; z-index: 10000; display: flex; gap: 15px; }
-        .nav-icon-btn { font-size: 14px; font-weight: bold; color: #ffd700; cursor: pointer; text-shadow: 0 0 10px #ffd700; background: none; border: none; display: flex; align-items: center; gap: 4px; }
+        .nav-icon-btn { 
+            font-size: 14px; font-weight: bold; color: #ffd700; cursor: pointer; 
+            text-shadow: 0 0 10px #ffd700; background: none; border: none; 
+            display: flex; align-items: center; gap: 5px; padding: 8px 12px;
+            border-radius: 6px; transition: all 0.3s;
+        }
+        .nav-icon-btn:hover { background: rgba(255, 215, 0, 0.1); transform: scale(1.05); }
 
         /* 左侧菜单 */
         .side-menu {
@@ -95,16 +40,6 @@
             padding: 60px 15px 15px; overflow-y: auto; box-shadow: 10px 0 30px rgba(0,0,0,0.9);
         }
         .side-menu.open { left: 0; }
-        
-        /* 顶部下拉记录抽屉 */
-        .record-drawer {
-            position: absolute; top: -100%; left: 0; width: 100%; 
-            background: rgba(10, 8, 5, 0.99); border-bottom: 2px solid #ffd700;
-            z-index: 9999; transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 60px 20px 30px; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            max-height: 75vh;
-        }
-        .record-drawer.open { top: 0; }
 
         .menu-close { text-align: right; font-size: 20px; cursor: pointer; color: #fff; margin-bottom: 20px; }
         .accordion-item { margin-bottom: 10px; border: 1px solid #3d2f0f; border-radius: 8px; background: #110d04; overflow: hidden; }
@@ -119,909 +54,420 @@
             background: linear-gradient(180deg, #333 0%, #111 100%); border: 1px solid #ffd700;
             color: #ffd700; padding: 10px; width: 100%; border-radius: 6px; margin-top: 8px; cursor: pointer; font-weight: bold; font-size: 13px;
         }
-        .toggle-btn { display: flex; justify-content: space-between; align-items: center; }
 
-        /* ================= 🎰 极简 3x5 黑金拉霸竞技盘 ================= */
-        .premium-card {
+        /* ================= 🎭 悬浮登录按钮 ================= */
+        .float-login-btn {
+            position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 999999; 
+            background: linear-gradient(180deg, #ffd700, #b8860b); border: 2px solid #000; 
+            padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; 
+            color: #000; box-shadow: 0 4px 15px rgba(255,215,0,0.5); font-size: 14px;
+        }
+        .float-login-btn:hover { transform: translateX(-50%) scale(1.05); }
+
+        /* ================= 🎮 游戏大厅主容器 ================= */
+        .lobby-header {
+            text-align: center; margin-top: 60px; margin-bottom: 30px;
+        }
+
+        .lobby-title {
+            font-size: 32px; font-weight: 900; color: #ffd700; 
+            text-shadow: 0 0 20px #ffd700, 0 0 40px rgba(255,215,0,0.3);
+            letter-spacing: 2px; margin-bottom: 10px;
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px #ffd700, 0 0 40px rgba(255,215,0,0.3); }
+            50% { text-shadow: 0 0 30px #ffd700, 0 0 60px rgba(255,215,0,0.5); }
+        }
+
+        .lobby-subtitle {
+            font-size: 13px; color: #b89742; letter-spacing: 1px;
+        }
+
+        /* ================= 🎯 游戏分类卡片网格 ================= */
+        .games-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; 
+            margin-bottom: 30px; padding: 0 10px;
+        }
+
+        .game-category-card {
             background: linear-gradient(135deg, #1a1405 0%, #050508 100%);
-            border: 2px solid #ffd700; border-radius: 12px; padding: 15px; text-align: center;
-            box-shadow: 0 0 25px rgba(255,215,0,0.15), inset 0 0 15px rgba(255,215,0,0.1); margin-bottom: 15px;
-        }
-        .balance-num { font-size: 38px; font-weight: 900; color: #fff; text-shadow: 0 0 20px #ffd700; margin-top: 4px; cursor: pointer;}
-
-        .slot-frame {
-            background: linear-gradient(135deg, #0f0b03 0%, #2a1f0a 50%, #050401 100%);
-            border: 3px solid #ffd700; border-radius: 12px; padding: 8px;
-            box-shadow: 0 0 40px rgba(255,215,0,0.3), inset 0 0 30px #000; margin-bottom: 15px;
-        }
-        .reels-window { display: flex; background: #000; border-radius: 6px; padding: 4px; overflow: hidden; justify-content: space-between; }
-        .reel-col { width: 19%; height: 250px; background: #050508; border-right: 1px solid #2a1f0a; overflow: hidden; position: relative; }
-        .reel-col:last-child { border-right: none; }
-        .reel-container { position: absolute; top: 0; left: 0; width: 100%; display: flex; flex-direction: column; }
-        
-        .slot-item {
-            height: 83.3px; display: flex; justify-content: center; align-items: center; font-size: 36px;
-            background: transparent; text-shadow: 0 4px 10px #000;
+            border: 2px solid #ffd700; border-radius: 12px; padding: 20px;
+            text-align: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(255,215,0,0.1), inset 0 0 15px rgba(255,215,0,0.05);
+            position: relative; overflow: hidden;
         }
 
-        /* ================= 🎛️ 物理操控面板 ================= */
-        .control-panel { display: flex; flex-direction: column; gap: 10px; z-index: 20;}
-        .bet-bar { display: flex; justify-content: space-between; align-items: center; background: #0a0804; padding: 12px; border-radius: 6px; border: 1px solid #3d2f0f; }
-        
-        .action-buttons { display: flex; gap: 10px; }
-        
-        .spin-btn {
-            flex: 2; background: linear-gradient(180deg, #ffe875 0%, #ffd700 40%, #b8860b 100%); color: #000;
-            border: 2px solid #fff; padding: 16px; font-size: 20px; font-weight: 900; border-radius: 12px; 
-            box-shadow: 0 8px 0 #8b6508, 0 15px 20px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.8);
-            transition: all 0.1s ease; text-shadow: 0 1px 2px rgba(255,255,255,0.8);
-        }
-        .spin-btn:active {
-            transform: translateY(8px); box-shadow: 0 0 0 #8b6508, 0 5px 10px rgba(0,0,0,0.6), inset 0 4px 10px rgba(0,0,0,0.4);
-            text-shadow: 0 -1px 2px rgba(0,0,0,0.5); background: linear-gradient(180deg, #e6c200 0%, #ccac00 40%, #8b6508 100%);
-        }
-        .spin-btn:disabled { opacity: 0.8; pointer-events: none; }
-        
-        .spin-btn.free-spin-mode {
-            background: linear-gradient(180deg, #e085ff 0%, #9900ff 40%, #4b0082 100%);
-            color: #fff; border-color: #ffd700; box-shadow: 0 8px 0 #3a0066, 0 15px 20px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.5);
-            text-shadow: 0 1px 4px #000;
+        .game-category-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1) 0%, transparent 70%);
+            opacity: 0; transition: opacity 0.3s;
         }
 
-        .auto-btn {
-            flex: 1; background: linear-gradient(180deg, #444 0%, #111 100%); color: #ffd700;
-            border: 2px solid #b89742; font-weight: bold; font-size: 16px; border-radius: 12px; cursor: pointer;
+        .game-category-card:hover {
+            border-color: #ffed4e; transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(255,215,0,0.3), inset 0 0 20px rgba(255,215,0,0.1);
         }
 
-        .result-display-window {
-            text-align: center; font-weight: bold; font-size: 14px; min-height: 35px; color: #fff;
-            background: #0a0804; padding: 8px; border-radius: 6px; border: 1px solid #3d2f0f;
+        .game-category-card:hover::before {
+            opacity: 1;
         }
 
-        .tg-premium-contact {
-            position: fixed; bottom: 80px; right: 15px;
-            background: linear-gradient(135deg, #ffd700 0%, #8b6508 100%); color: #000;
-            padding: 10px 16px; border-radius: 20px; font-weight: bold; box-shadow: 0 4px 20px rgba(255,215,0,0.5);
-            z-index: 9999; font-size: 13px; border: 1px solid #fff; touch-action: none; cursor: move;
+        .card-icon {
+            font-size: 48px; margin-bottom: 12px; display: inline-block;
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+
+        .game-category-card:nth-child(1) .card-icon { animation-delay: 0s; }
+        .game-category-card:nth-child(2) .card-icon { animation-delay: 0.2s; }
+        .game-category-card:nth-child(3) .card-icon { animation-delay: 0.4s; }
+        .game-category-card:nth-child(4) .card-icon { animation-delay: 0.6s; }
+        .game-category-card:nth-child(5) .card-icon { animation-delay: 0.8s; }
+        .game-category-card:nth-child(6) .card-icon { animation-delay: 1s; }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .card-title {
+            font-size: 16px; font-weight: 900; color: #ffd700; 
+            margin-bottom: 8px; letter-spacing: 1px;
+        }
+
+        .card-subtitle {
+            font-size: 11px; color: #b89742; opacity: 0.8;
+        }
+
+        .card-count {
+            font-size: 12px; color: #888; margin-top: 10px;
+            border-top: 1px solid #3d2f0f; padding-top: 8px;
+        }
+
+        .card-count strong { color: #00ff00; }
+
+        /* ================= 💰 底部账户信息 ================= */
+        .lobby-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: linear-gradient(180deg, rgba(5,5,8,0.98) 0%, rgba(10,8,5,0.99) 100%);
+            border-top: 2px solid #ffd700; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 450px; margin: 0 auto; z-index: 100;
+        }
+
+        .balance-info {
+            display: flex; flex-direction: column;
+        }
+
+        .balance-label { font-size: 11px; color: #b89742; }
+        .balance-amount { font-size: 18px; font-weight: 900; color: #fff; text-shadow: 0 0 10px #ffd700; }
+
+        .footer-btn {
+            background: linear-gradient(180deg, #ffd700, #b8860b); color: #000;
+            border: 2px solid #fff; padding: 10px 20px; border-radius: 20px;
+            font-weight: bold; cursor: pointer; font-size: 13px;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.3); transition: all 0.3s;
+        }
+
+        .footer-btn:hover { transform: scale(1.05); }
+
+        /* ================= 🔊 音量滑块 ================= */
+        .volume-control { display: flex; align-items: center; gap: 8px; padding: 10px 0; }
+        .volume-label { font-size: 12px; color: #ffd700; min-width: 60px; }
+        .volume-slider {
+            flex: 1; -webkit-appearance: none; appearance: none; height: 6px;
+            border-radius: 3px; background: #3d2f0f; outline: none; cursor: pointer;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
+            border-radius: 50%; background: linear-gradient(180deg, #ffd700, #b8860b);
+            cursor: pointer; box-shadow: 0 0 6px rgba(255,215,0,0.5);
+        }
+        .volume-slider::-moz-range-thumb {
+            width: 18px; height: 18px; border-radius: 50%; border: none;
+            background: linear-gradient(180deg, #ffd700, #b8860b); cursor: pointer;
+        }
+        .volume-value { font-size: 12px; color: #ffd700; min-width: 30px; text-align: right; }
+
+        /* ================= 🎵 粒子和装饰 ================= */
+        #particleBox { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            pointer-events: none; z-index: 1; overflow: hidden;
+        }
+
+        /* ================= 📱 响应式设计 ================= */
+        @media (max-width: 480px) {
+            .games-grid { grid-template-columns: 1fr; }
+            .lobby-title { font-size: 28px; }
+            .app-container { padding: 15px; }
         }
     </style>
 </head>
-<!-- 绑定全局点击事件，用于关闭菜单和抽屉 -->
 <body onclick="handleClickOutside(event)">
-<!-- 悬浮登录注册按钮 -->
-<div style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 999999; pointer-events: auto;">
-    <button onclick=" window.location.href='auth.html'; event.stopPropagation();" 
-            style="background: linear-gradient(180deg, #ffd700, #b8860b); border: 2px solid #000; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; color: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-size: 14px;">
+    <!-- 悬浮登录按钮 -->
+    <button class="float-login-btn" onclick="window.location.href='auth.html';">
         登录 / 注册
     </button>
-</div>
-    
-<div id="particleBox"></div>
 
-<div class="app-container">
-    
-    <!-- 左上角导航 -->
-    <div class="top-nav-fixed">
-        <button class="nav-icon-btn" onclick="toggleMenu(event)">☰ 设置</button>
-        <button class="nav-icon-btn" onclick="switchPage('lobbyPage')">🏠 主页</button>
-    </div>
+    <!-- 粒子容器 -->
+    <div id="particleBox"></div>
 
-    <!-- 右上角导航 (游戏记录/介绍按钮) -->
-    <div class="top-nav-fixed" style="right: 15px; left: auto;">
-        <button class="nav-icon-btn" onclick="toggleRecord(event)" style="border: 1px solid #ffd700; padding: 5px 8px; border-radius: 6px; background: rgba(20,15,5,0.8);">📜 游戏记录</button>
-    </div>
-
-    <!-- 下拉记录菜单 -->
-    <div id="recordDrawer" class="record-drawer">
-        <h3 style="color:#ffd700; text-align:center; margin-bottom:15px; font-size:15px; letter-spacing: 1px;">📜 游戏对局记录</h3>
-        <div id="recordList">
-            <!-- 记录将通过 JS 动态注入在这里 -->
-        </div>
-    </div>
-
-    <!-- 左侧设置菜单 -->
-    <div class="side-menu" id="sideMenu">
-        <div class="menu-close" onclick="closeAllMenus()">✖ 关闭</div>
+    <div class="app-container">
         
-        <div class="accordion-item">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
-                <span>📖 游戏规则</span><span>▼</span>
-            </div>
-            <div class="accordion-content" style="max-height: 55vh; overflow-y: auto;">
-                <h3 style="color:#ffd700; text-align:center; margin-bottom:15px; font-size:14px; letter-spacing: 1px;">
-                    <span id="ruleTitleCoin" style="display:inline-block; vertical-align:middle; margin-right:4px;"></span> VIP 大厅
-                </h3>
-                
-                <h4 style="color:#fff; margin-bottom:8px; border-bottom:1px dashed #555; padding-bottom:5px;">➤ 9线中奖线路</h4>
-
-<div style="text-align:center; margin-bottom:15px;">
-  <img
-    id="win-lines-img"
-    src="https://i.postimg.cc/FR2MZbnG/IMG-1907.jpg"
-    alt="9线中奖线路"
-    style="width:100%; max-width:720px; height:auto; border-radius:6px; border:1px solid #444; box-shadow:0 2px 8px rgba(0,0,0,0.35); cursor:zoom-in;"
-  />
-</div>
-
-<style>
-  .img-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  .img-modal.open {
-    display: flex;
-  }
-  .img-modal img {
-    max-width: 95%;
-    max-height: 95%;
-    border-radius: 8px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-    background: #fff;
-  }
-</style>
-
-<script>
-  (function () {
-    const img = document.getElementById('win-lines-img');
-    if (!img) return;
-
-    const modal = document.createElement('div');
-    modal.className = 'img-modal';
-
-    const modalImg = document.createElement('img');
-    modal.appendChild(modalImg);
-    document.body.appendChild(modal);
-
-    img.addEventListener('click', function () {
-      modalImg.src = this.src;
-      modal.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    });
-
-    modal.addEventListener('click', function () {
-      modal.classList.remove('open');
-      document.body.style.overflow = '';
-    });
-  })();
-</script>
-
-                <h4 style="color:#fff; margin-bottom:8px; border-bottom:1px dashed #555; padding-bottom:5px;">➤ 倍率赔付表(按线注算)</h4>
-                <table style="width:100%; text-align:center; color:#ccc; border-collapse: collapse; margin-bottom:15px; font-size:12px; background: rgba(0,0,0,0.6); border-radius: 6px; overflow: hidden; box-shadow: inset 0 0 10px rgba(0,0,0,0.8);">
-                    <tr style="color:#ffd700; background: rgba(255,215,0,0.1);">
-                        <th style="padding:4px; border-bottom:1px solid #3d2f0f;">图标</th>
-                        <th style="padding:4px; border-bottom:1px solid #3d2f0f;">3个</th>
-                        <th style="padding:4px; border-bottom:1px solid #3d2f0f;">4个</th>
-                        <th style="padding:4px; border-bottom:1px solid #3d2f0f;">5个</th>
-                    </tr>
-                    <tr style="border-bottom:1px solid #2a1f0a;">
-                        <td style="padding:4px; font-size:16px;">💦</td><td>3×</td><td>8×</td><td>20×</td>
-                    </tr>
-                    <tr style="border-bottom:1px solid #2a1f0a;">
-                        <td style="padding:4px; font-size:16px;">㉿</td><td>5×</td><td>15×</td><td>50×</td>
-                    </tr>
-                    <tr style="border-bottom:1px solid #2a1f0a;">
-                        <td style="padding:4px; font-size:16px;">🥩</td><td>10×</td><td>30×</td><td>80×</td>
-                    </tr>
-                    <tr style="border-bottom:1px solid #2a1f0a;">
-                        <td style="padding:4px; font-size:16px;">🥚</td><td>15×</td><td>45×</td><td>120×</td>
-                    </tr>
-                    <tr style="border-bottom:1px solid #2a1f0a;">
-                        <td style="padding:4px;">
-                            <img src="https://i.postimg.cc/1tTwWB6C/7B2E665C-9E8C-4323-8F9B-F1D042B19E62.jpg" style="width:20px; height:20px; border-radius:4px; vertical-align:middle; border:1px solid #b89742;">
-                        </td><td>30×</td><td>80×</td><td>300×</td>
-                    </tr>
-                    <tr>
-                        <td style="padding:4px;">
-                            <img src="https://i.postimg.cc/FzX7hY9X/D8E6F370-D2EB-4240-9395-D9636F761637.jpg" style="width:20px; height:20px; border-radius:4px; vertical-align:middle; border:1px solid #b89742;">
-                        </td><td>50×</td><td>150×</td><td>1000×</td>
-                    </tr>
-                </table>
-
-                <h4 style="color:#fff; margin-bottom:8px; border-bottom:1px dashed #555; padding-bottom:5px;">➤ 特殊机制</h4>
-                <p style="margin-bottom:10px; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 6px;">
-                    <b style="font-size: 13px;"><img src="https://i.postimg.cc/K82r0YLr/IMG-1911.jpg" style="width:16px; height:16px; border-radius:50%; vertical-align:middle; border:none; margin-right:4px; object-fit: cover;">百搭 (Wild)</b><br>
-                    <span style="color:#aaa; font-size:11px;">代替任何图标（不可代替 <span id="ruleNoSubstituteCoin" style="display:inline-block; vertical-align:middle; width:16px; height:16px;"></span> ）。</span>
-                </p>
-                <p style="line-height: 1.8; background: rgba(0,0,0,0.4); padding: 8px; border-radius: 6px;">
-                    <b><span id="ruleCoinPlaceholder" style="display:inline-block; vertical-align:middle; width:22px; height:22px; margin-right:4px;"></span>免费游戏</b><br>
-                    <span style="color:#ccc; font-size:11px;">仅触发免费，无直接派彩。</span><br>
-                    <span style="color:#ccc; font-size:11px;">触发 <b>3</b> 个 ➡️ 免费旋转 <b>10</b> 次</span><br>
-                    <span style="color:#ccc; font-size:11px;">触发 <b>4</b> 个 ➡️ 免费旋转 <b>15</b> 次</span><br>
-                    <span style="color:#ccc; font-size:11px;">触发 <b>5</b> 个 ➡️ 免费旋转 <b>20</b> 次</span><br>
-                </p>
-            </div>
+        <!-- 左上角导航 -->
+        <div class="top-nav-fixed">
+            <button class="nav-icon-btn" onclick="toggleMenu(event)">☰ 设置</button>
         </div>
 
-        <div class="accordion-item">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
-                <span>💰 充值与提现</span><span>▼</span>
-            </div>
-            <div class="accordion-content">
-                <button class="menu-btn" onclick="openExchange('in')">📥 注入积分 (充值)</button>
-                <button class="menu-btn" onclick="openExchange('out')">📤 提取结算 (提现)</button>
-            </div>
-        </div>
-
-        <div class="accordion-item">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
-                <span>⚙️ 硬件与音效</span><span>▼</span>
-            </div>
-            <div class="accordion-content open">
-                <button class="menu-btn toggle-btn" onclick="toggleSetting('bgm')">
-                    <span>🎵 背景音乐</span> <span id="bgmStatus">开</span>
-                </button>
-                <button class="menu-btn toggle-btn" onclick="toggleSetting('sfx')">
-                    <span>🔊 游戏音效</span> <span id="sfxStatus">开</span>
-                </button>
-                <button class="menu-btn toggle-btn" onclick="toggleSetting('vibrate')">
-                    <span>📳 震动效果</span> <span id="vibStatus">开</span>
-                </button>
-                <button class="menu-btn" style="border-color:#555;" onclick="location.reload()">🔄 刷新页面</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= 💎 大厅界面 ================= -->
-    <div id="lobbyPage" class="page active">
-        <div style="text-align: center; margin-bottom: 20px; margin-top: 50px;">
-            <div id="lobbyCoinContainer" style="height: 250px; margin-bottom: 30px; display:flex; justify-content:center; align-items:center;"></div>
-            <h2 class="shake-text" style="color:#ffd700; text-shadow: 0 0 15px #ffd700; letter-spacing: 2px;">VIP 专属大厅</h2>
-        </div>
-        <div class="premium-card">
-            <div style="font-size: 12px; color: #ffd700;">总资产积分储蓄柜 (连续点击5次可触发神秘指令)</div>
-            <div class="balance-num secret-trigger">加载中...</div>
-        </div>
-        <button class="menu-btn" style="padding: 18px; font-size: 18px; background: #ffd700; color:#000; box-shadow: 0 0 20px rgba(255,215,0,0.5);" onclick="switchPage('gamePage')">进入 3x5 纯金漆面盘</button>
-    </div>
-
-    <!-- ================= 🎰 游戏界面 ================= -->
-    <div id="gamePage" class="page">
-        <div class="premium-card" style="padding: 10px;">
-            <div style="font-size: 12px; color: #b89742;">在盘资金总额</div>
-            <div class="balance-num secret-trigger" style="font-size: 32px;">0</div>
-        </div>
-
-        <div class="slot-frame">
-            <div class="reels-window">
-                <div class="reel-col"><div class="reel-container" id="reel0"></div></div>
-                <div class="reel-col"><div class="reel-container" id="reel1"></div></div>
-                <div class="reel-col"><div class="reel-container" id="reel2"></div></div>
-                <div class="reel-col"><div class="reel-container" id="reel3"></div></div>
-                <div class="reel-col"><div class="reel-container" id="reel4"></div></div>
-            </div>
-        </div>
-
-        <div class="control-panel">
-            <div class="bet-bar">
-                <span style="color:#ffd700; font-weight:bold;">单次投掷底注:</span>
-                <select id="betSelect" style="background:transparent; color:#ffd700; border:none; font-weight:900; font-size:18px; outline:none;">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="5">5</option>
-                    <option value="8">8</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="30">30</option>
-                    <option value="50">50</option>
-                    <option value="80">80</option>
-                    <option value="100" selected>100</option>
-                    <option value="200">200</option>
-                    <option value="500">500</option>
-                </select>
-            </div>
+        <!-- 左侧设置菜单 -->
+        <div class="side-menu" id="sideMenu">
+            <div class="menu-close" onclick="closeAllMenus()">✖ 关闭</div>
             
-            <div class="action-buttons">
-                <button class="auto-btn" id="autoBtn" onclick="toggleAutoSpin()">自动旋转</button>
-                <button class="spin-btn" id="spinButton" onclick="startSpin()">拉动摇杆</button>
-            </div>
-            <div class="result-display-window" id="gameResultDisplay">物理引擎已就绪...</div>
-        </div>
-    </div>
-
-    <!-- ================= 💰 充值结算界面 ================= -->
-    <div id="exchangePage" class="page">
-        <h2 style="text-align: center; margin-bottom: 20px;">安全财务中心</h2>
-        <div class="premium-card">
-            <div class="balance-num" id="exchangeBalance" style="font-size:30px;">0</div>
-        </div>
-        <select id="exchangeType" style="width:100%; padding:15px; margin-bottom:15px; background:#0a0804; color:#ffd700; border:1px solid #b89742; border-radius: 8px;">
-            <option value="in">📥 注入积分 (充值)</option>
-            <option value="out">📤 提取结算 (提现)</option>
-        </select>
-        <input type="number" id="exchangeAmount" value="5000" style="width:100%; padding:15px; margin-bottom:15px; background:#0a0804; color:#fff; border:1px solid #b89742; border-radius: 8px;">
-        <button class="spin-btn" style="width:100%;" onclick="submitExchange()">向财务端提交申请</button>
-    </div>
-
-    <!-- ================= q⚙️ 隐形风控后台 ================= -->
-    <div id="adminPage" class="page" style="border: 2px solid #ff4d4d; background: rgba(20,0,0,0.9); padding: 15px; border-radius: 12px;">
-        <h3 style=" color: #ff4d4d; text-align: center; margin-bottom: 15px;">🛡️ 极速风控调节端 (最高权限)</h3>
-        <div style="margin-bottom: 15px;">
-            <label style="color:#ccc; font-size: 13px;">⚡ 自由增减点数</label>
-            <div style="display:flex; gap:10px; margin-top:5px;">
-                <input type="number" id="adminCreditAmount" value="10000" style="flex:1; background:#000; color:#fff; padding:10px; border:1px solid #ff4d4d;">
-                <button onclick="adminAddCredit()" style="background:#ff4d4d; border:none; padding:10px; font-weight:bold; color:#fff; border-radius: 4px;">即时注入</button>
-            </div>
-        </div>
-        <div>
-            <label style="color:#ccc; font-size: 13px;">🎯 3x5 下局开奖胜率强制干预</label>
-            <select id="adminWinRate" onchange="saveAdminSettings()" style="width:100%; padding:10px; margin-top:5px; background:#000; color:#fff; border:1px solid #ff4d4d;">
-                <option value="random">🎰 真实纯随机概率运作</option>
-                <option value="forceSeven">🔥 强行爆全屏汪大金币</option>
-                <option value="forceLose">💀 强行吞分</option>
-            </select>
-        </div>
-        <button class="menu-btn" style="margin-top:20px; border-color:#fff; color:#fff;" onclick="switchPage('lobbyPage')">退出后台</button>
-    </div>
-</div>
-
-<div class="tg-premium-contact" id="tgFloatLink" onclick="window.location.href='https://t.me/oyoyf'">✈️ 联系客服</div>
-
-<!-- 这是你原本的音频标签，保留在原位 -->
-<audio id="bgMusic" loop src="https://files.catbox.moe/pj05ky.mp3" preload="auto"></audio>
-
-<script>
-    /* ================= 核心配置与状态 ================= */
-    const REAL_COIN_IMG = "https://files.catbox.moe/m9f3ea.png";
-    
-    const SYMBOLS = ['💦', '㉿', '🥩', '🥚', '🚗', '👆🏻', '🐠', 'WD'];
-    const WEIGHTS = { '💦':15, '㉿':12, '🥩':10, '🥚':8, '🚗':5, '👆🏻':3, '🐠':4, 'WD':4 };
-    let POOL = [];
-    for(let key in WEIGHTS) { for(let i=0; i<WEIGHTS[key]; i++) POOL.push(key); }
-
-    let playerWallet = parseFloat(localStorage.getItem('wd_wallet')) || 10000;
-    let settings = JSON.parse(localStorage.getItem('wd_settings')) || { bgm: true, sfx: true, vibrate: true };
-    let adminRate = localStorage.getItem('wd_admin_rate') || 'random';
-    
-    let gameRecords = JSON.parse(localStorage.getItem('wd_records')) || [];
-
-    let isAutoSpinning = false;
-    let autoSpinTimeout = null;
-    let audioUnlocked = false;
-    let freeSpinsRemaining = 0;
-
-    /* ================= 🌟 3D 金币渲染器 ================= */
-    function generate3DCoinHTML(size) {
-        let d = size === 'large' ? 200 : (size === 'medium' ? 65: 22);
-        let thickness = size === 'large' ? 24 : (size === 'medium' ? 8: 4);
-        let segments = size === 'small' ? 20: 40; 
-        
-        let radius = d / 2;
-        let angle = 360 / segments;
-        let segWidth = 2 * radius * Math.tan(Math.PI / segments) + 1;
-
-        let html = `<div class="wangda-coin-scene" style="width:${d}px; height:${d}px;">`;
-        if(size === 'large') html += `<div class="coin-base"></div>`;
-
-        html += `<div class="coin-container-3d">
-                    <div class="coin-face" style="background-image:url('${REAL_COIN_IMG}'); transform: translateZ(${thickness/2}px);">
-                        <div class="light-sweep"><div class="sweep-line"></div></div>
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>⚙️ 硬件与音效</span><span>▼</span>
+                </div>
+                <div class="accordion-content open">
+                    <div class="volume-control">
+                        <span class="volume-label">🎵 音乐</span>
+                        <input type="range" class="volume-slider" id="bgmVolume" min="0" max="100" value="30" oninput="onVolumeChange('bgm', this.value)">
+                        <span class="volume-value" id="bgmVolVal">30</span>
                     </div>
-                    <div class="coin-face" style="background-image:url('${REAL_COIN_IMG}'); transform: rotateY(180deg) translateZ(${thickness/2}px);">
-                        <div class="light-sweep"><div class="sweep-line"></div></div>
+                    <div class="volume-control">
+                        <span class="volume-label">🔊 音效</span>
+                        <input type="range" class="volume-slider" id="sfxVolume" min="0" max="100" value="80" oninput="onVolumeChange('sfx', this.value)">
+                        <span class="volume-value" id="sfxVolVal">80</span>
                     </div>
-                    <div style="position: absolute; top:50%; left:50%; width:0; height:0; transform-style: preserve-3d; transform: rotateX(90deg);">`;
-        
-        for (let i = 0; i < segments; i++) {
-            html += `<div class="coin-edge-segment" style="width:${segWidth}px; height:${thickness}px; margin-left:-${segWidth/2}px; margin-top:-${thickness/2}px; transform: rotateY(${i * angle}deg) translateZ(${radius}px);"></div>`;
-        }
-        html += `</div></div></div>`;
-        return html;
-    }
+                    <div class="volume-control">
+                        <span class="volume-label">📳 震动</span>
+                        <input type="range" class="volume-slider" id="vibVolume" min="0" max="100" value="100" oninput="onVolumeChange('vib', this.value)">
+                        <span class="volume-value" id="vibVolVal">100</span>
+                    </div>
+                    <button class="menu-btn" style="border-color:#555;" onclick="location.reload()">🔄 刷新页面</button>
+                </div>
+            </div>
 
-    function renderSymbol(sym, size = 'medium') {
-        if(sym === 'WD') return generate3DCoinHTML(size);
-        if(sym === '🚗') return `<img src="https://i.postimg.cc/1tTwWB6C/7B2E665C-9E8C-4323-8F9B-F1D042B19E62.jpg" style="width: 55px; height: 55px; border-radius: 8px; object-fit: cover; vertical-align: middle; box-shadow: 0 0 10px rgba(0,0,0,0.8); border: 1px solid #b89742;">`;
-        if(sym === '👆🏻' || sym === '👆') return `<img src="https://i.postimg.cc/FzX7hY9X/D8E6F370-D2EB-4240-9395-D9636F761637.jpg" style="width: 55px; height: 55px; border-radius: 8px; object-fit: cover; vertical-align: middle; box-shadow: 0 0 10px rgba(0,0,0,0.8); border: 1px solid #b89742;">`;
-        if(sym === '🐠') return `<img src="https://i.postimg.cc/K82r0YLr/IMG-1911.jpg" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; vertical-align: middle; box-shadow: 0 0 10px rgba(0,0,0,0.8);">`;
-        return sym;
-    }
+            <div class="accordion-item">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>💰 账户管理</span><span>▼</span>
+                </div>
+                <div class="accordion-content">
+                    <button class="menu-btn" onclick="openExchange('in')">📥 充值</button>
+                    <button class="menu-btn" onclick="openExchange('out')">📤 提现</button>
+                </div>
+            </div>
+        </div>
 
-    /* ================= 🎵 毫秒级音效引擎 ================= */
-    const AudioEngine = {
-        ctx: null,
-        init() { 
-            if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
-            if(this.ctx.state === 'suspended') this.ctx.resume();
-        },
-        play(type) {
-            if(!settings.sfx) return;
-            this.init();
-            const now = this.ctx.currentTime;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.connect(gain); gain.connect(this.ctx.destination);
-            
-            if(type === 'lever') {
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now); osc.stop(now + 0.1);
-            } else if(type === 'stop') {
-                osc.type = 'square'; osc.frequency.setValueAtTime(200, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.1);
-                gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now); osc.stop(now + 0.1);
+        <!-- 大厅头部 -->
+        <div class="lobby-header">
+            <h1 class="lobby-title">🎮 游戏大厅</h1>
+            <p class="lobby-subtitle">选择你喜爱的游戏类型</p>
+        </div>
+
+        <!-- 游戏分类网格 -->
+        <div class="games-grid">
+            <!-- 老虎机 -->
+            <div class="game-category-card" onclick="enterGameHall('slots')">
+                <div class="card-icon">🎰</div>
+                <div class="card-title">老虎机</div>
+                <div class="card-subtitle">SLOTS</div>
+                <div class="card-count">共 <strong>8</strong> 款游戏</div>
+            </div>
+
+            <!-- 百家乐 -->
+            <div class="game-category-card" onclick="enterGameHall('baccarat')">
+                <div class="card-icon">🎴</div>
+                <div class="card-title">百家乐</div>
+                <div class="card-subtitle">BACCARAT</div>
+                <div class="card-count">共 <strong>5</strong> 款游戏</div>
+            </div>
+
+            <!-- 骰子游戏 -->
+            <div class="game-category-card" onclick="enterGameHall('dice')">
+                <div class="card-icon">🎲</div>
+                <div class="card-title">骰子游戏</div>
+                <div class="card-subtitle">DICE</div>
+                <div class="card-count">共 <strong>6</strong> 款游戏</div>
+            </div>
+
+            <!-- 捕鱼游戏 -->
+            <div class="game-category-card" onclick="enterGameHall('fishing')">
+                <div class="card-icon">🎣</div>
+                <div class="card-title">捕鱼游戏</div>
+                <div class="card-subtitle">FISHING</div>
+                <div class="card-count">共 <strong>4</strong> 款游戏</div>
+            </div>
+
+            <!-- 真人棋牌 -->
+            <div class="game-category-card" onclick="enterGameHall('poker')">
+                <div class="card-icon">♠️</div>
+                <div class="card-title">真人棋牌</div>
+                <div class="card-subtitle">POKER</div>
+                <div class="card-count">共 <strong>7</strong> 款游戏</div>
+            </div>
+
+            <!-- 其他游戏 -->
+            <div class="game-category-card" onclick="enterGameHall('other')">
+                <div class="card-icon">🎯</div>
+                <div class="card-title">其他游戏</div>
+                <div class="card-subtitle">MORE</div>
+                <div class="card-count">共 <strong>12</strong> 款游戏</div>
+            </div>
+        </div>
+
+        <!-- 底部占位符 -->
+        <div style="height: 100px;"></div>
+    </div>
+
+    <!-- 底部账户信息栏 -->
+    <div class="lobby-footer">
+        <div class="balance-info">
+            <span class="balance-label">💰 账户余额</span>
+            <span class="balance-amount" id="playerBalance">10,000</span>
+        </div>
+        <button class="footer-btn" onclick="openExchange('in')">快速充值</button>
+    </div>
+
+    <!-- 背景音乐 -->
+    <audio id="bgMusic" loop src="https://files.catbox.moe/pj05ky.mp3" preload="auto"></audio>
+
+    <script>
+        /* ================= 核心配置与状态 ================= */
+        let playerWallet = parseFloat(localStorage.getItem('wd_wallet')) || 10000;
+        let settings = JSON.parse(localStorage.getItem('wd_settings')) || { bgmVol: 30, sfxVol: 80, vibVol: 100 };
+        let audioUnlocked = false;
+
+        /* ================= 🎵 背景音乐管理 ================= */
+        function handleBGM() {
+            const bgm = document.getElementById('bgMusic');
+            if(!audioUnlocked || !bgm) return;
+            const vol = (settings.bgmVol || 0) / 100 * 0.5;
+            bgm.volume = vol;
+            if(vol > 0) { 
+                bgm.play().catch(e=>console.log("BGM Blocked")); 
+            } else { 
+                bgm.pause(); 
             }
-        },
-        startRoll() {
-            if(!settings.sfx) return;
-            this.init();
-            this.spinInterval = setInterval(() => {
-                const now = this.ctx.currentTime; const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
-                osc.type = 'square'; osc.frequency.setValueAtTime(300 + Math.random()*100, now);
-                gain.gain.setValueAtTime(0.03, now); gain.gain.linearRampToValueAtTime(0, now + 0.03);
-                osc.connect(gain); gain.connect(this.ctx.destination); osc.start(now); osc.stop(now + 0.03);
-            }, 60);
-        },
-        stopRoll() { if(this.spinInterval) clearInterval(this.spinInterval); }
-    };
-
-    /* ================= ⚙️ 系统与存储 ================= */
-    function updateWallet(amount) {
-        playerWallet += amount;
-        playerWallet = Math.round(playerWallet * 100) / 100;
-        localStorage.setItem('wd_wallet', playerWallet);
-        document.querySelectorAll('.balance-num:not(.secret-trigger)').forEach(el => el.innerText = playerWallet);
-        document.querySelectorAll('.secret-trigger').forEach(el => el.innerText = playerWallet);
-    }
-
-    function addRecord(bet, win) {
-        let now = new Date();
-        let timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        
-        let rec = { time: timeStr, bet: bet, win: win };
-        gameRecords.unshift(rec); 
-        if (gameRecords.length > 50) gameRecords.pop(); 
-        localStorage.setItem('wd_records', JSON.stringify(gameRecords));
-    }
-
-    function renderRecords() {
-        const list = document.getElementById('recordList');
-        if (gameRecords.length === 0) {
-            list.innerHTML = `<div style="text-align:center; color:#888; font-size:12px; padding: 20px;">暂无游戏记录，去赢一把吧！</div>`;
-            return;
         }
-        let html = '';
-        gameRecords.forEach(r => {
-            let isFree = r.bet === 0;
-            let isWin = r.win > 0;
-            let color = isWin ? '#00ff00' : (isFree ? '#ccc' : '#ff4d4d');
-            
-            let betStr = isFree ? '免转模式' : `押注: ${r.bet}`;
-            let resultStr = '';
-            if (isWin) {
-                resultStr = `赢: +${r.win}`;
+
+        // 解锁音频
+        document.body.addEventListener('touchstart', function unlockAudio() {
+            if(!audioUnlocked) {
+                audioUnlocked = true; 
+                handleBGM();
+                document.body.removeEventListener('touchstart', unlockAudio);
+            }
+        }, {once: true});
+
+        document.body.addEventListener('click', function unlockAudioClick() {
+            if(!audioUnlocked) {
+                audioUnlocked = true; 
+                handleBGM();
+                document.body.removeEventListener('click', unlockAudioClick);
+            }
+        }, {once: true});
+
+        // 页面切出自动静音
+        document.addEventListener('visibilitychange', function() {
+            const bgm = document.getElementById('bgMusic');
+            if (!bgm) return;
+            if (document.hidden) {
+                bgm.pause();
             } else {
-                resultStr = isFree? '未中奖' : `输: -${r.bet}`;
-            }
-
-            html += `
-            <div style="background: rgba(0,0,0,0.6); border: 1px solid #3d2f0f; border-radius: 6px; padding: 10px; margin-bottom: 8px; font-size: 12px; color: #ccc; display: flex; justify-content: space-between; align-items: center;">
-                <span style="color:#aaa;">🕒 ${r.time}</span>
-                <span style="font-weight:bold;">${betStr}</span>
-                <span style="color: ${color}; font-weight: bold;">${resultStr}</span>
-            </div>`;
-        });
-        list.innerHTML = html;
-    }
-
-    function toggleSetting(key) {
-        settings[key] = !settings[key];
-        localStorage.setItem('wd_settings', JSON.stringify(settings));
-        initSettingsUI();
-        if(key === 'bgm') handleBGM();
-    }
-
-    function initSettingsUI() {
-        document.getElementById('bgmStatus').innerText = settings.bgm ? "开": "关";
-        document.getElementById('sfxStatus').innerText = settings.sfx ? "开": "关";
-        document.getElementById('vibStatus').innerText = settings.vibrate ? "开" : "关";
-        document.getElementById('adminWinRate').value = adminRate;
-    }
-
-    // 完美接管背景音乐逻辑
-    function handleBGM() {
-        const bgm = document.getElementById('bgMusic');
-        if(!audioUnlocked || !bgm) return;
-        bgm.volume = 0.01; // 强制音量限制为 1%
-        if(settings.bgm) { 
-            bgm.play().catch(e=>console.log("BGM Blocked")); 
-        } else { 
-            bgm.pause(); 
-        }
-    }
-
-    // 解锁音频限制（支持手机触摸）
-    document.body.addEventListener('touchstart', function unlockAudio() {
-        if(!audioUnlocked) {
-            AudioEngine.init(); audioUnlocked = true; handleBGM();
-            document.body.removeEventListener('touchstart', unlockAudio);
-        }
-    }, {once: true});
-    
-    // 解锁音频限制（支持电脑点击）
-    document.body.addEventListener('click', function unlockAudioClick() {
-        if(!audioUnlocked) {
-            AudioEngine.init(); audioUnlocked = true; handleBGM();
-            document.body.removeEventListener('click', unlockAudioClick);
-        }
-    }, {once: true});
-
-    // ================= 核心修复：切出网页自动静音 =================
-    document.addEventListener('visibilitychange', function() {
-        const bgm = document.getElementById('bgMusic');
-        if (!bgm) return;
-        if (document.hidden) {
-            bgm.pause(); // 切到抖音/后台，立即暂停
-        } else {
-            if (settings.bgm && audioUnlocked) {
-                bgm.play(); // 回到游戏，且开关是开着的，恢复播放
-            }
-        }
-    });
-
-    function triggerVibrate(pattern) {
-        if(settings.vibrate && navigator.vibrate) navigator.vibrate(pattern);
-    }
-
-    let secretClicks = 0; let secretTimer;
-    document.querySelectorAll('.secret-trigger').forEach(el => {
-        el.addEventListener('click', () => {
-            secretClicks++; clearTimeout(secretTimer);
-            secretTimer = setTimeout(() => secretClicks = 0, 600);
-            if(secretClicks >= 5) {
-                switchPage('adminPage'); secretClicks = 0; triggerVibrate([100,50,100]);
+                if ((settings.bgmVol || 0) > 0 && audioUnlocked) {
+                    bgm.play();
+                }
             }
         });
-    });
 
-    function saveAdminSettings() {
-        adminRate = document.getElementById('adminWinRate').value;
-        localStorage.setItem('wd_admin_rate', adminRate);
-    }
-
-    function adminAddCredit() {
-        let amt = parseInt(document.getElementById('adminCreditAmount').value || 0);
-        updateWallet(amt); alert("⚡ 即时注入成功！当前总额: " + playerWallet);
-    }
-
-    // ================= 无遮罩层点击外部关闭控制 =================
-    function handleClickOutside(event) {
-        const sideMenu = document.getElementById('sideMenu');
-        const recordDrawer = document.getElementById('recordDrawer');
-        
-        if (!sideMenu.contains(event.target) && 
-            !recordDrawer.contains(event.target) && 
-            !event.target.closest('.nav-icon-btn')) {
-            closeAllMenus();
+        /* ================= ⚙️ 设置管理 ================= */
+        function updateWallet(amount) {
+            playerWallet += amount;
+            playerWallet = Math.round(playerWallet * 100) / 100;
+            localStorage.setItem('wd_wallet', playerWallet);
+            document.getElementById('playerBalance').innerText = playerWallet.toLocaleString();
         }
-    }
 
-    function switchPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        closeAllMenus();
-    }
-
-    function closeAllMenus() {
-        document.getElementById('sideMenu').classList.remove('open');
-        document.getElementById('recordDrawer').classList.remove('open');
-    }
-
-    function toggleMenu(event) {
-        if(event) event.stopPropagation();
-        const menu = document.getElementById('sideMenu');
-        const drawer = document.getElementById('recordDrawer');
-        
-        if (!menu.classList.contains('open')) {
-            drawer.classList.remove('open'); 
-            menu.classList.add('open');
-        } else {
-            menu.classList.remove('open');
-        }
-    }
-    
-    function toggleRecord(event) {
-        if(event) event.stopPropagation();
-        const drawer = document.getElementById('recordDrawer');
-        const menu = document.getElementById('sideMenu');
-        
-        if (!drawer.classList.contains('open')) {
-            renderRecords(); 
-            menu.classList.remove('open'); 
-            drawer.classList.add('open');
-        } else {
-            drawer.classList.remove('open');
-        }
-    }
-
-    function toggleAccordion(header) {
-        const content = header.nextElementSibling;
-        content.classList.toggle('open');
-        header.querySelectorAll('span')[1].innerText = content.classList.contains('open') ? '▲' : '▼';
-    }
-
-    function openExchange(type) {
-        switchPage('exchangePage'); document.getElementById('exchangeType').value = type;
-    }
-
-    function submitExchange() {
-        triggerVibrate(50); 
-        alert("凭证已打包！即将为您跳转 TG 安全通道进行人工审核放款/上分。");
-        window.location.href='https://t.me/oyoyf';
-    }
-
-    /* ================= 🎰 核心拉霸逻辑 ================= */
-    function initReels() {
-        document.getElementById('lobbyCoinContainer').innerHTML = renderSymbol('WD', 'large');
-        
-        document.getElementById('ruleTitleCoin').innerHTML = renderSymbol('WD', 'small');
-        document.getElementById('ruleCoinPlaceholder').innerHTML = renderSymbol('WD', 'small');
-        // 将不能代替队长文字中的部分换成 3D 小金币
-        document.getElementById('ruleNoSubstituteCoin').innerHTML = renderSymbol('WD', 'small');
-        
-        for (let r = 0; r < 5; r++) {
-            const container = document.getElementById(`reel${r}`); container.innerHTML = '';
-            for (let i = 0; i < 15; i++) {
-                const item = document.createElement('div'); item.className = 'slot-item';
-                let sym = POOL[Math.floor(Math.random() * POOL.length)];
-                item.innerHTML = renderSymbol(sym, 'medium');
-                container.appendChild(item);
+        function onVolumeChange(key, val) {
+            const v = parseInt(val);
+            if (key === 'bgm') {
+                settings.bgmVol = v;
+                document.getElementById('bgmVolVal').innerText = v;
+                handleBGM();
+            } else if (key === 'sfx') {
+                settings.sfxVol = v;
+                document.getElementById('sfxVolVal').innerText = v;
+            } else if (key === 'vib') {
+                settings.vibVol = v;
+                document.getElementById('vibVolVal').innerText = v;
             }
-            container.style.transform = 'translateY(0px)';
-        }
-    }
-
-    function toggleAutoSpin() {
-        isAutoSpinning = !isAutoSpinning;
-        const btn = document.getElementById('autoBtn');
-        if (isAutoSpinning) {
-            btn.innerText = "停止自动"; btn.style.background = "linear-gradient(180deg, #aa0000 0%, #550000 100%)";
-            if (!document.getElementById('spinButton').disabled) startSpin();
-        } else {
-            btn.innerText = "自动旋转"; btn.style.background = "linear-gradient(180deg, #444 0%, #111 100%)";
-            clearTimeout(autoSpinTimeout);
-        }
-    }
-
-    function startSpin() {
-        const bet = parseFloat(document.getElementById('betSelect').value);
-        const isFreeSpin = freeSpinsRemaining > 0;
-
-        if (!isFreeSpin && playerWallet < bet) { 
-            alert("资金不足，请前往财务中心注入积分！"); 
-            if(isAutoSpinning) toggleAutoSpin(); 
-            return; 
+            localStorage.setItem('wd_settings', JSON.stringify(settings));
         }
 
-        if (!isFreeSpin) {
-            updateWallet(-bet);
-        } else {
-            freeSpinsRemaining--;
+        function initSettingsUI() {
+            const bgmV = settings.bgmVol ?? 30;
+            const sfxV = settings.sfxVol ?? 80;
+            const vibV = settings.vibVol ?? 100;
+            document.getElementById('bgmVolume').value = bgmV;
+            document.getElementById('bgmVolVal').innerText = bgmV;
+            document.getElementById('sfxVolume').value = sfxV;
+            document.getElementById('sfxVolVal').innerText = sfxV;
+            document.getElementById('vibVolume').value = vibV;
+            document.getElementById('vibVolVal').innerText = vibV;
         }
 
-        AudioEngine.play('lever'); AudioEngine.startRoll(); triggerVibrate(30); 
-        
-        const btn = document.getElementById('spinButton');
-        btn.disabled = true; 
-        
-        if (isFreeSpin) {
-            btn.classList.add('free-spin-mode');
-            btn.innerText = `免转中 (余${freeSpinsRemaining}次)`;
-            document.getElementById('gameResultDisplay').innerHTML = `<span style="color:#e085ff">🔮 免费神力正在摇动...</span>`;
-        } else {
-            btn.classList.remove('free-spin-mode');
-            btn.innerText = "运转中...";
-            document.getElementById('gameResultDisplay').innerText = "机械齿轮正在咬合...";
+        /* ================= 🎮 菜单与导航 ================= */
+        function toggleMenu(event) {
+            if(event) event.stopPropagation();
+            const menu = document.getElementById('sideMenu');
+            menu.classList.toggle('open');
         }
 
-        let finalMatrix = [[], [], [], [], []]; let wdCount = 0;
-        for (let col = 0; col < 5; col++) {
-            for (let row = 0; row < 3; row++) {
-                let chosen = POOL[Math.floor(Math.random() * POOL.length)];
-                if (adminRate === 'forceSeven') {
-                    if (chosen === '👆🏻') chosen = 'WD';
-                    if (Math.random() < 0.7) chosen = 'WD';
-                } else if (adminRate === 'forceLose' && (chosen === '👆🏻' || chosen === 'WD' || chosen === '🚗')) { 
-                    chosen = '💦'; 
-                }
-                if(chosen === 'WD') { wdCount++; if(wdCount > 5) chosen = '💦'; }
-                finalMatrix[col].push(chosen);
+        function closeAllMenus() {
+            document.getElementById('sideMenu').classList.remove('open');
+        }
+
+        function handleClickOutside(event) {
+            const sideMenu = document.getElementById('sideMenu');
+            if (!sideMenu.contains(event.target) && !event.target.closest('.nav-icon-btn')) {
+                closeAllMenus();
             }
         }
 
-        for (let r = 0; r < 5; r++) {
-            const container = document.getElementById(`reel${r}`);
-            const items = container.querySelectorAll('.slot-item');
-            for(let h=0; h<3; h++) { items[h].innerHTML = renderSymbol(finalMatrix[r][h], 'medium'); }
-            container.style.transition = 'none'; container.style.transform = 'translateY(-1000px)';
+        function toggleAccordion(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('open');
+            header.querySelectorAll('span')[1].innerText = content.classList.contains('open') ? '▲' : '▼';
+        }
+
+        /* ================= 🎯 游戏大厅跳转 ================= */
+        function enterGameHall(category) {
+            const halls = {
+                'slots': 'game-halls/slots-hall.html',
+                'baccarat': 'game-halls/baccarat-hall.html',
+                'dice': 'game-halls/dice-hall.html',
+                'fishing': 'game-halls/fishing-hall.html',
+                'poker': 'game-halls/poker-hall.html',
+                'other': 'game-halls/other-hall.html'
+            };
             
-            setTimeout(() => {
-                container.style.transition = `transform ${1.2 + r * 0.15}s cubic-bezier(0.2, 1.2, 0.4, 1)`;
-                container.style.transform = 'translateY(0px)';
-                setTimeout(() => { 
-                    if(r === 4) AudioEngine.stopRoll();
-                    AudioEngine.play('stop'); triggerVibrate(15);
-                }, 1000 + r * 150);
-            }, 30);
-        }
-
-        setTimeout(() => {
-            settleGame(finalMatrix, bet, isFreeSpin);
-        }, 2200);
-    }
-
-    function settleGame(matrix, bet, isFreeSpin) {
-        const lines = [
-            [1, 1, 1, 1, 1],
-            [0, 0, 0, 0, 0],
-            [2, 2, 2, 2, 2],
-            [0, 1, 2, 1, 0],
-            [2, 1, 0, 1, 2],
-            [0, 0, 1, 2, 2],
-            [2, 2, 1, 0, 0],
-            [1, 0, 1, 2, 1],
-            [1, 2, 1, 0, 1]
-        ];
-
-        const payTable = {
-            '💦': { 3: 3, 4: 8, 5: 20 },
-            '㉿': { 3: 5, 4: 15, 5: 50 },
-            '🥩': { 3: 10, 4: 30, 5: 80 },
-            '🥚': { 3: 15, 4: 45, 5: 120 },
-            '🚗': { 3: 30, 4: 80, 5: 300 },
-            '👆🏻': { 3: 50, 4: 150, 5: 1000 },
-            '👆': { 3: 50, 4: 150, 5: 1000 }, 
-            '🐠': { 3: 50, 4: 150, 5: 1000 } 
-        };
-
-        let totalWin = 0;
-        let winDetails = []; 
-
-        let lineBet = bet / 9;
-
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            let currentSymbol = matrix[0][line[0]];
-            let matchCount = 1;
-
-            if (currentSymbol === 'WD') continue; 
-
-            for (let c = 1; c < 5; c++) {
-                let nextSym = matrix[c][line[c]];
-                if (nextSym === 'WD') break; 
-
-                if (nextSym === currentSymbol || nextSym === '🐠' || currentSymbol === '🐠') {
-                    matchCount++;
-                    if (currentSymbol === '🐠' && nextSym !== '🐠') {
-                        currentSymbol = nextSym;
-                    }
-                } else {
-                    break;
-                }
-            }
-
-            if (matchCount >= 3) {
-                let baseSym = (currentSymbol === '👆') ? '👆🏻' : currentSymbol; 
-                if (payTable[baseSym]) {
-                    let odds = payTable[baseSym][matchCount];
-                    let lineWin = lineBet * odds; 
-                    totalWin += lineWin;
-                    
-                    let displayName = baseSym;
-                    if(baseSym === '🚗') displayName = '汽车';
-                    if(baseSym === '👆🏻') displayName = '手指';
-                    if(baseSym === '🐠') displayName = '百搭';
-                    winDetails.push(`${displayName}×${matchCount}`);
-                }
+            if (halls[category]) {
+                window.location.href = halls[category];
             }
         }
 
-        let countWD = 0;
-        for (let c = 0; c < 5; c++) {
-            for (let r = 0; r < 3; r++) { if (matrix[c][r] === 'WD') countWD++; }
-        }
-        
-        let freeMsg = "";
-        let newFreeSpins = 0;
-
-        if (countWD >= 3) {
-            if (freeSpinsRemaining > 0) {
-                newFreeSpins = 5;
-                freeMsg = `<br>🎊 <span style="color:#e085ff;">免费中再摇出${countWD}个队长! 追加 5 次免转！</span>`;
-            } else {
-                newFreeSpins = countWD === 3 ? 10 : countWD === 4 ? 15 : 20;
-                freeMsg = `<br>🎊 <span style="color:#e085ff;">摇出${countWD}个队长! 触发 ${newFreeSpins} 次全免费旋转！</span>`;
-            }
-            
-            freeSpinsRemaining += newFreeSpins;
-            if (freeSpinsRemaining > 80) freeSpinsRemaining = 80;
-            
-            winDetails.push(`队长×${countWD}`);
-            triggerVibrate([200, 100, 200, 100, 400]); 
+        /* ================= 💰 充值与提现 ================= */
+        function openExchange(type) {
+            alert(`${type === 'in' ? '充值' : '提现'}功能 - 即将跳转到财务中心...`);
+            // window.location.href = 'exchange.html?type=' + type;
         }
 
-        totalWin = Math.floor(totalWin * 100) / 100;
-
-        let actualBetCost = isFreeSpin ? 0 : bet;
-        addRecord(actualBetCost, totalWin);
-
-        if (totalWin > 0 || newFreeSpins > 0) {
-            let winText = totalWin > 0 ? `<br>赢取: <span style="color:#00ff00;">+${totalWin} 积分</span>` : '';
-            document.getElementById('gameResultDisplay').innerHTML = `🔥 中奖连线: [ ${winDetails.join(' | ')} ] ${winText} ${freeMsg}`;
-            if (totalWin > 0) {
-                triggerVibrate([100, 50, 100, 50, 200]);
-                updateWallet(totalWin);
-            }
-        } else {
-            document.getElementById('gameResultDisplay').innerHTML = `🔩 传动静息，期待下次机械重音撞击`;
-        }
-
-        const btn = document.getElementById('spinButton');
-
-        if (freeSpinsRemaining > 0) {
-            btn.innerText = `免转中 (余${freeSpinsRemaining}次)`;
-            btn.classList.add('free-spin-mode');
-            setTimeout(startSpin, 1800); 
-        } else {
-            btn.disabled = false;
-            btn.classList.remove('free-spin-mode');
-            btn.innerText = "拉动摇杆";
-            
-            if(isAutoSpinning) {
-                autoSpinTimeout = setTimeout(startSpin, 1200);
-            }
-        }
-
-        if(adminRate !== 'random') {
-            adminRate = 'random'; document.getElementById('adminWinRate').value = 'random'; saveAdminSettings();
-        }
-    }
-
-    /* ================= 🚀 拖拽悬浮客服 ================= */
-    const dragEl = document.getElementById('tgFloatLink');
-    let isDrag = false, sX, sY, iX, iY;
-    dragEl.addEventListener('touchstart', e => {
-        isDrag = false; sX = e.touches[0].clientX; sY = e.touches[0].clientY;
-        iX = dragEl.offsetLeft; iY = dragEl.offsetTop;
-    }, {passive:true});
-    dragEl.addEventListener('touchmove', e => {
-        let dx = e.touches[0].clientX - sX, dy = e.touches[0].clientY - sY;
-        if(Math.abs(dx)>5 || Math.abs(dy)>5) isDrag = true;
-        if(isDrag) { dragEl.style.left = `${iX+dx}px`; dragEl.style.top = `${iY+dy}px`; dragEl.style.right='auto'; dragEl.style.bottom='auto';}
-    }, {passive:true});
-
-    function createLobbyParticles() {
-        const box = document.getElementById('particleBox');
-        if(!box || document.getElementById('lobbyPage').style.display === 'none') return;
-        const p = document.createElement('div');
-        const size = Math.random() * 4 + 2;
-        p.style.cssText = `position:absolute; width:${size}px; height:${size}px; border-radius:50%; background:#ffd700; box-shadow:0 0 ${size+2}px #ffeb80; left:${Math.random()*100}%; top:100%; opacity:${Math.random()*0.8+0.2}; z-index:1;`;
-        box.appendChild(p);
-        let op = parseFloat(p.style.opacity);
-        let speed = Math.random() * 2 + 1;
-        let anim = setInterval(() => {
-            p.style.top = (parseFloat(p.style.top) - speed/5) + "%"; op -= 0.005; p.style.opacity = op;
-            if(op <= 0) { clearInterval(anim); p.remove(); }
-        }, 30);
-    }
-    setInterval(createLobbyParticles, 150);
-
-    window.onload = () => { 
-        initSettingsUI(); 
-        updateWallet(0); 
-        initReels(); 
-        
-        // 游戏启动时，初始化一次音乐音量
-        const bgm = document.getElementById('bgMusic');
-        if (bgm) bgm.volume = 0.1;
-    };
-</script>
+        /* ================= 🚀 初始化 ================= */
+        window.addEventListener('load', () => {
+            initSettingsUI();
+            document.getElementById('playerBalance').innerText = playerWallet.toLocaleString();
+        });
+    </script>
 </body>
 </html>

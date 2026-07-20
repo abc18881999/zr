@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>冰晶骰子</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #050508; color: #ffd700; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .game-container { width: 100%; max-width: 450px; margin: 0 auto; min-height: 100vh; padding: 18px 16px 88px; background: radial-gradient(circle at top, rgba(30, 110, 180, 0.5), rgba(5,5,8,0.98) 58%), linear-gradient(180deg, rgba(12,24,44,0.95), rgba(5,5,8,0.98)); border-left: 2px solid #b89742; border-right: 2px solid #b89742; }
+        .game-header, .panel, .footer-bar { background: rgba(8, 16, 34, 0.94); border: 1px solid #ffd700; border-radius: 14px; box-shadow: 0 0 18px rgba(90,170,255,0.16); }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; margin-bottom: 14px; }
+        .back-btn { background: none; border: none; color: #ffd700; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .game-title { font-size: 18px; font-weight: 900; text-shadow: 0 0 12px rgba(100,200,255,0.55); }
+        .balance { font-size: 13px; color: #fff; }
+        .panel { padding: 14px; margin-bottom: 14px; }
+        .dice-row { display: flex; justify-content: center; gap: 12px; margin: 10px 0 14px; }
+        .die { width: 92px; height: 92px; border-radius: 20px; background: linear-gradient(180deg, rgba(98,208,255,0.25), rgba(255,255,255,0.05)); border: 2px solid rgba(120,220,255,0.65); display: flex; align-items: center; justify-content: center; font-size: 52px; box-shadow: inset 0 0 18px rgba(100,200,255,0.16); }
+        .rolling { animation: pulse 0.18s linear infinite; }
+        @keyframes pulse { 0% { transform: translateY(0) scale(1); } 50% { transform: translateY(-3px) scale(1.04); } 100% { transform: translateY(0) scale(1); } }
+        .summary { text-align: center; font-size: 16px; color: #fff; font-weight: 800; }
+        .message { min-height: 24px; text-align: center; font-size: 14px; color: #d7f6ff; margin-top: 8px; }
+        .choice-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .choice-btn { padding: 12px; border-radius: 12px; border: 1px solid rgba(120,220,255,0.45); background: rgba(255,255,255,0.05); color: #d7f6ff; font-weight: 700; cursor: pointer; }
+        .choice-btn small { display: block; opacity: 0.8; margin-top: 4px; }
+        .choice-btn.active { background: linear-gradient(180deg, #8ee7ff, #1d82c2); color: #071626; box-shadow: 0 0 14px rgba(120,220,255,0.35); }
+        .roll-btn { width: 100%; margin-top: 14px; padding: 15px; border: none; border-radius: 16px; font-size: 24px; font-weight: 900; color: #071626; background: linear-gradient(180deg, #ffe072, #7fd7ff); cursor: pointer; }
+        .roll-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .footer-bar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 450px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(5,5,8,0.98); border-bottom: none; border-radius: 14px 14px 0 0; }
+        .footer-label { font-size: 11px; color: #7fd7ff; }
+        .footer-value { font-size: 18px; color: #fff; font-weight: 900; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <button class="back-btn" onclick="history.back()">← 返回</button>
+            <div class="game-title">❄️ 冰晶骰子</div>
+            <div class="balance" id="balanceTop">余额: 10000</div>
+        </div>
+
+        <div class="panel">
+            <div class="summary" id="summary">等待掷骰 · 和值：-</div>
+            <div class="dice-row">
+                <div class="die" id="die1">🎲</div>
+                <div class="die" id="die2">🎲</div>
+                <div class="die" id="die3">🎲</div>
+            </div>
+            <div class="message" id="message">下注豹子 / 大 / 小 / 对子，冰晶骰盅即刻开启。</div>
+        </div>
+
+        <div class="panel">
+            <div class="choice-grid">
+                <button class="choice-btn active type-btn" data-type="triple">豹子<small>30x</small></button>
+                <button class="choice-btn type-btn" data-type="big">大<small>11-17 · 1.9x</small></button>
+                <button class="choice-btn type-btn" data-type="small">小<small>4-10 · 1.9x</small></button>
+                <button class="choice-btn type-btn" data-type="pair">对子<small>任意对子 · 2x</small></button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="choice-grid">
+                <button class="choice-btn active bet-btn" data-bet="50">50</button>
+                <button class="choice-btn bet-btn" data-bet="100">100</button>
+                <button class="choice-btn bet-btn" data-bet="200">200</button>
+                <button class="choice-btn bet-btn" data-bet="500">500</button>
+            </div>
+            <button class="roll-btn" id="rollBtn">冰封开骰</button>
+        </div>
+    </div>
+
+    <div class="footer-bar">
+        <div><div class="footer-label">钱包余额</div><div class="footer-value" id="balanceBottom">10000</div></div>
+        <div><div class="footer-label">本局下注</div><div class="footer-value" id="betView">50 / 豹子</div></div>
+    </div>
+
+    <script>
+        let balance = parseFloat(localStorage.getItem('wd_wallet')) || 10000;
+        let currentBet = 50;
+        let currentType = 'triple';
+        let rolling = false;
+        let audioCtx;
+        const dieFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function tone(freq, start, duration, type = 'sine', gainValue = 0.05) {
+            const ctx = getAudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(gainValue, start + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + duration + 0.02);
+        }
+
+        function playSound(type) {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+            if (type === 'spin') {
+                [880, 980, 1080, 930].forEach((f, i) => tone(f, now + i * 0.05, 0.05, 'triangle', 0.05));
+            } else if (type === 'click') {
+                tone(760, now, 0.05, 'triangle', 0.06);
+            } else if (type === 'win') {
+                [740, 920, 1160, 1360].forEach((f, i) => tone(f, now + i * 0.08, 0.16, 'sine', 0.07));
+            } else if (type === 'lose') {
+                tone(180, now, 0.2, 'sawtooth', 0.05);
+                tone(130, now + 0.1, 0.22, 'triangle', 0.04);
+            }
+        }
+
+        function typeText(type) {
+            return ({ triple: '豹子', big: '大', small: '小', pair: '对子' })[type];
+        }
+
+        function updateBalance() {
+            document.getElementById('balanceTop').textContent = `余额: ${balance.toFixed(2)}`;
+            document.getElementById('balanceBottom').textContent = balance.toFixed(2);
+            document.getElementById('betView').textContent = `${currentBet} / ${typeText(currentType)}`;
+            localStorage.setItem('wd_wallet', balance.toFixed(2));
+        }
+
+        function judge(values) {
+            const sum = values.reduce((a, b) => a + b, 0);
+            const unique = new Set(values).size;
+            const triple = unique === 1;
+            const pair = unique === 2;
+            const win = (
+                (currentType === 'triple' && triple) ||
+                (currentType === 'big' && sum >= 11 && sum <= 17) ||
+                (currentType === 'small' && sum >= 4 && sum <= 10) ||
+                (currentType === 'pair' && pair && !triple)
+            );
+            const multiplier = currentType === 'triple' ? 30 : currentType === 'pair' ? 2 : 1.9;
+            return { win, sum, multiplier, triple, pair };
+        }
+
+        function startRoll() {
+            if (rolling) return;
+            if (balance < currentBet) {
+                document.getElementById('message').textContent = '余额不足，无法下注。';
+                playSound('lose');
+                return;
+            }
+            rolling = true;
+            balance -= currentBet;
+            updateBalance();
+            document.getElementById('rollBtn').disabled = true;
+            document.getElementById('message').textContent = `冰晶能量凝聚，下注 ${typeText(currentType)} ${currentBet}...`;
+            playSound('spin');
+
+            const diceEls = [document.getElementById('die1'), document.getElementById('die2'), document.getElementById('die3')];
+            diceEls.forEach(el => el.classList.add('rolling'));
+            const anim = setInterval(() => {
+                diceEls.forEach(el => { el.textContent = '❄️'; });
+            }, 90);
+
+            setTimeout(() => {
+                clearInterval(anim);
+                const values = Array.from({ length: 3 }, () => Math.floor(Math.random() * 6) + 1);
+                const result = judge(values);
+                diceEls.forEach((el, index) => {
+                    el.classList.remove('rolling');
+                    el.textContent = dieFaces[values[index] - 1];
+                });
+                document.getElementById('summary').textContent = `结果：${values.join(' / ')} · 和值：${result.sum}`;
+                if (result.win) {
+                    const payout = currentBet * result.multiplier;
+                    balance += payout;
+                    document.getElementById('message').textContent = `命中${typeText(currentType)}！赢得 ${payout.toFixed(2)}。`;
+                    playSound('win');
+                } else {
+                    document.getElementById('message').textContent = `未命中${typeText(currentType)}，本局结果 ${values.join('-')}。`;
+                    playSound('lose');
+                }
+                updateBalance();
+                rolling = false;
+                document.getElementById('rollBtn').disabled = false;
+            }, 1400);
+        }
+
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (rolling) return;
+                document.querySelectorAll('.type-btn').forEach(item => item.classList.remove('active'));
+                btn.classList.add('active');
+                currentType = btn.dataset.type;
+                updateBalance();
+                playSound('click');
+            });
+        });
+
+        document.querySelectorAll('.bet-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (rolling) return;
+                document.querySelectorAll('.bet-btn').forEach(item => item.classList.remove('active'));
+                btn.classList.add('active');
+                currentBet = parseInt(btn.dataset.bet, 10);
+                updateBalance();
+                playSound('click');
+            });
+        });
+
+        document.getElementById('rollBtn').addEventListener('click', startRoll);
+        updateBalance();
+    </script>
+</body>
+</html>
