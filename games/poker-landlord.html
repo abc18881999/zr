@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>斗地主</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #050508; color: #ffd700; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .game-container { width: 100%; max-width: 450px; margin: 0 auto; min-height: 100vh; padding: 18px 12px 96px; background: radial-gradient(circle at top, rgba(70,110,30,0.35), rgba(5,5,8,0.98) 58%), linear-gradient(180deg, rgba(14,24,9,0.95), rgba(5,5,8,0.98)); border-left: 2px solid #b89742; border-right: 2px solid #b89742; }
+        .game-header, .panel, .footer-bar { background: rgba(10, 18, 8, 0.94); border: 1px solid #ffd700; border-radius: 14px; box-shadow: 0 0 18px rgba(255,215,0,0.12); }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; margin-bottom: 12px; }
+        .back-btn { background: none; border: none; color: #ffd700; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .game-title { font-size: 18px; font-weight: 900; text-shadow: 0 0 12px rgba(255,215,0,0.4); }
+        .balance { font-size: 13px; color: #fff; }
+        .panel { padding: 12px; margin-bottom: 12px; }
+        .players-top { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .player-box { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px; text-align: center; }
+        .player-name { font-size: 14px; color: #fff; font-weight: 800; }
+        .player-role { font-size: 11px; color: #ffd700; margin-top: 2px; }
+        .player-count { margin-top: 8px; font-size: 18px; font-weight: 900; color: #fff; }
+        .table-box { min-height: 150px; text-align: center; }
+        .center-status { font-size: 13px; color: #fff; min-height: 22px; }
+        .last-play { margin-top: 10px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.04); min-height: 70px; }
+        .bottom-cards { margin-top: 10px; font-size: 12px; color: #b8d480; }
+        .cards-line { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 8px; }
+        .hand-area { min-height: 136px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: flex-end; }
+        .card-btn { min-width: 42px; padding: 10px 6px; border-radius: 10px; border: 1px solid rgba(255,215,0,0.25); background: linear-gradient(180deg, #fbf7e2, #fff); color: #111; font-weight: 800; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease; }
+        .card-btn.selected { transform: translateY(-10px); border-color: #ff7b00; box-shadow: 0 0 12px rgba(255,123,0,0.25); }
+        .actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .action-btn { padding: 12px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; color: #111; background: linear-gradient(180deg, #ffe072, #c89e15); }
+        .action-btn.secondary { background: linear-gradient(180deg, #d3d3d3, #939393); }
+        .action-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+        .message { min-height: 24px; text-align: center; font-size: 14px; color: #fff; margin-top: 10px; }
+        .footer-bar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 450px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(5,5,8,0.98); border-bottom: none; border-radius: 14px 14px 0 0; }
+        .footer-label { font-size: 11px; color: #b8d480; }
+        .footer-value { font-size: 18px; color: #fff; font-weight: 900; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <button class="back-btn" onclick="history.back()">← 返回</button>
+            <div class="game-title">🃏 斗地主</div>
+            <div class="balance" id="balanceTop">余额: 10000</div>
+        </div>
+
+        <div class="panel players-top">
+            <div class="player-box">
+                <div class="player-name">地主 AI</div>
+                <div class="player-role">对手</div>
+                <div class="player-count" id="landlordCount">20</div>
+            </div>
+            <div class="player-box">
+                <div class="player-name">农民2</div>
+                <div class="player-role">队友 AI</div>
+                <div class="player-count" id="farmer2Count">17</div>
+            </div>
+        </div>
+
+        <div class="panel table-box">
+            <div class="center-status" id="status">点击“新开一局”开始，入场费 100，胜利返奖 300。</div>
+            <div class="last-play" id="lastPlay">当前牌桌：暂无出牌</div>
+            <div class="bottom-cards" id="bottomCards">底牌：-</div>
+            <div class="message" id="message">你是农民，与农民2联手对抗地主 AI。</div>
+        </div>
+
+        <div class="panel">
+            <div class="player-name" style="text-align:center;">你的手牌</div>
+            <div class="hand-area" id="handArea"></div>
+            <div class="actions">
+                <button class="action-btn" id="playBtn">出牌</button>
+                <button class="action-btn secondary" id="passBtn">不出</button>
+                <button class="action-btn" id="newGameBtn">新开一局</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bar">
+        <div><div class="footer-label">钱包余额</div><div class="footer-value" id="balanceBottom">10000</div></div>
+        <div><div class="footer-label">当前身份</div><div class="footer-value">农民</div></div>
+    </div>
+
+    <script>
+        let balance = parseFloat(localStorage.getItem('wd_wallet')) || 10000;
+        let audioCtx;
+        const rankOrder = ['3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A', '2', '小王', '大王'];
+        const rankValue = rankOrder.reduce((map, rank, index) => (map[rank] = index + 1, map), {});
+        const suits = ['♠', '♥', '♣', '♦'];
+        let players = [[], [], []];
+        let bottom = [];
+        let selectedIds = new Set();
+        let currentTurn = 0;
+        let currentPlay = null;
+        let currentLeader = null;
+        let passCount = 0;
+        let gameOver = true;
+
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function tone(freq, start, duration, type = 'sine', gainValue = 0.05) {
+            const ctx = getAudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(gainValue, start + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + duration + 0.02);
+        }
+
+        function playSound(type) {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+            if (type === 'deal' || type === 'click') {
+                tone(320, now, 0.05, 'sawtooth', 0.06);
+                tone(460, now + 0.04, 0.04, 'triangle', 0.04);
+            } else if (type === 'win') {
+                [620, 780, 960, 1180].forEach((f, i) => tone(f, now + i * 0.08, 0.16, 'triangle', 0.07));
+            } else if (type === 'lose') {
+                tone(180, now, 0.2, 'sawtooth', 0.05);
+                tone(120, now + 0.1, 0.26, 'triangle', 0.04);
+            }
+        }
+
+        function updateBalance() {
+            document.getElementById('balanceTop').textContent = `余额: ${balance.toFixed(2)}`;
+            document.getElementById('balanceBottom').textContent = balance.toFixed(2);
+            localStorage.setItem('wd_wallet', balance.toFixed(2));
+        }
+
+        function buildDeck() {
+            let id = 0;
+            const deck = [];
+            rankOrder.slice(0, 13).forEach(rank => {
+                suits.forEach(suit => {
+                    deck.push({ id: `c${++id}`, rank, suit, label: `${rank}${suit}` });
+                });
+            });
+            deck.push({ id: `c${++id}`, rank: '小王', suit: '', label: '🃏小王' });
+            deck.push({ id: `c${++id}`, rank: '大王', suit: '', label: '🃏大王' });
+            return deck;
+        }
+
+        function shuffle(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        function sortCards(cards) {
+            cards.sort((a, b) => rankValue[a.rank] - rankValue[b.rank] || a.label.localeCompare(b.label));
+        }
+
+        function canStraightRank(rank) {
+            return rankValue[rank] <= rankValue['A'];
+        }
+
+        function groupByRank(cards) {
+            const map = new Map();
+            cards.forEach(card => {
+                if (!map.has(card.rank)) map.set(card.rank, []);
+                map.get(card.rank).push(card);
+            });
+            return map;
+        }
+
+        function analyzeCards(cards) {
+            const sorted = [...cards].sort((a, b) => rankValue[a.rank] - rankValue[b.rank]);
+            const ranks = sorted.map(card => card.rank);
+            const groups = groupByRank(sorted);
+            const counts = [...groups.values()].map(group => group.length).sort((a, b) => a - b);
+            const uniqueRanks = [...groups.keys()].sort((a, b) => rankValue[a] - rankValue[b]);
+            const length = sorted.length;
+
+            if (length === 1) return { type: 'single', value: rankValue[ranks[0]], length, cards: sorted };
+            if (length === 2) {
+                if (uniqueRanks.includes('小王') && uniqueRanks.includes('大王')) return { type: 'rocket', value: 999, length, cards: sorted };
+                if (groups.size === 1) return { type: 'pair', value: rankValue[ranks[0]], length, cards: sorted };
+            }
+            if (length === 3 && groups.size === 1) return { type: 'trio', value: rankValue[ranks[0]], length, cards: sorted };
+            if (length === 4) {
+                if (groups.size === 1) return { type: 'bomb', value: rankValue[ranks[0]], length, cards: sorted };
+                const trioRank = uniqueRanks.find(rank => groups.get(rank).length === 3);
+                if (trioRank) return { type: 'trio1', value: rankValue[trioRank], length, cards: sorted };
+            }
+
+            const isStraight = length >= 5 && groups.size === length && uniqueRanks.every(canStraightRank) &&
+                uniqueRanks.every((rank, index) => index === 0 || rankValue[rank] === rankValue[uniqueRanks[index - 1]] + 1);
+            if (isStraight) return { type: 'straight', value: rankValue[uniqueRanks[uniqueRanks.length - 1]], length, cards: sorted };
+
+            const isPairStraight = length >= 6 && length % 2 === 0 && counts.every(count => count === 2) &&
+                uniqueRanks.every(canStraightRank) &&
+                uniqueRanks.every((rank, index) => index === 0 || rankValue[rank] === rankValue[uniqueRanks[index - 1]] + 1);
+            if (isPairStraight) return { type: 'pairStraight', value: rankValue[uniqueRanks[uniqueRanks.length - 1]], length, cards: sorted };
+
+            return null;
+        }
+
+        function beats(play, target) {
+            if (!target) return true;
+            if (play.type === 'rocket') return true;
+            if (target.type === 'rocket') return false;
+            if (play.type === 'bomb' && target.type !== 'bomb') return true;
+            if (play.type !== target.type) return false;
+            if ((play.type === 'straight' || play.type === 'pairStraight') && play.length !== target.length) return false;
+            return play.value > target.value;
+        }
+
+        function getAllPlays(hand) {
+            const sorted = [...hand].sort((a, b) => rankValue[a.rank] - rankValue[b.rank]);
+            const groups = groupByRank(sorted);
+            const plays = [];
+            const uniqueRanks = [...groups.keys()].sort((a, b) => rankValue[a] - rankValue[b]);
+
+            uniqueRanks.forEach(rank => plays.push({ type: 'single', value: rankValue[rank], length: 1, cards: [groups.get(rank)[0]] }));
+            uniqueRanks.forEach(rank => {
+                if (groups.get(rank).length >= 2) plays.push({ type: 'pair', value: rankValue[rank], length: 2, cards: groups.get(rank).slice(0, 2) });
+                if (groups.get(rank).length >= 3) plays.push({ type: 'trio', value: rankValue[rank], length: 3, cards: groups.get(rank).slice(0, 3) });
+                if (groups.get(rank).length === 4) plays.push({ type: 'bomb', value: rankValue[rank], length: 4, cards: groups.get(rank).slice(0, 4) });
+            });
+
+            uniqueRanks.forEach(rank => {
+                if (groups.get(rank).length >= 3) {
+                    const trio = groups.get(rank).slice(0, 3);
+                    const kicker = sorted.find(card => card.rank !== rank);
+                    if (kicker) plays.push({ type: 'trio1', value: rankValue[rank], length: 4, cards: [...trio, kicker] });
+                }
+            });
+
+            if (groups.has('小王') && groups.has('大王')) {
+                plays.push({ type: 'rocket', value: 999, length: 2, cards: [groups.get('小王')[0], groups.get('大王')[0]] });
+            }
+
+            const straightRanks = uniqueRanks.filter(canStraightRank);
+            for (let start = 0; start < straightRanks.length; start++) {
+                let run = [straightRanks[start]];
+                for (let i = start + 1; i < straightRanks.length; i++) {
+                    if (rankValue[straightRanks[i]] === rankValue[run[run.length - 1]] + 1) {
+                        run.push(straightRanks[i]);
+                        if (run.length >= 5) {
+                            const cards = run.map(rank => groups.get(rank)[0]);
+                            plays.push({ type: 'straight', value: rankValue[run[run.length - 1]], length: cards.length, cards });
+                        }
+                    } else break;
+                }
+            }
+
+            const pairRanks = uniqueRanks.filter(rank => groups.get(rank).length >= 2 && canStraightRank(rank));
+            for (let start = 0; start < pairRanks.length; start++) {
+                let run = [pairRanks[start]];
+                for (let i = start + 1; i < pairRanks.length; i++) {
+                    if (rankValue[pairRanks[i]] === rankValue[run[run.length - 1]] + 1) {
+                        run.push(pairRanks[i]);
+                        if (run.length >= 3) {
+                            const cards = run.flatMap(rank => groups.get(rank).slice(0, 2));
+                            plays.push({ type: 'pairStraight', value: rankValue[run[run.length - 1]], length: cards.length, cards });
+                        }
+                    } else break;
+                }
+            }
+
+            const dedup = new Map();
+            plays.forEach(play => {
+                const key = `${play.type}:${play.value}:${play.length}:${play.cards.map(card => card.id).join(',')}`;
+                dedup.set(key, play);
+            });
+            return [...dedup.values()].sort((a, b) => {
+                const order = ['single', 'pair', 'trio', 'trio1', 'straight', 'pairStraight', 'bomb', 'rocket'];
+                return order.indexOf(a.type) - order.indexOf(b.type) || a.value - b.value || a.length - b.length;
+            });
+        }
+
+        function getAIPlay(hand) {
+            const plays = getAllPlays(hand);
+            if (!currentPlay) return plays[0] || null;
+            const sameType = plays.filter(play => play.type === currentPlay.type && beats(play, currentPlay));
+            if (sameType.length) return sameType[0];
+            if (currentPlay.type !== 'bomb') {
+                const bomb = plays.find(play => play.type === 'bomb');
+                if (bomb) return bomb;
+            }
+            return plays.find(play => play.type === 'rocket') || null;
+        }
+
+        function renderHand() {
+            const handArea = document.getElementById('handArea');
+            sortCards(players[0]);
+            handArea.innerHTML = players[0].map(card => `
+                <button class="card-btn ${selectedIds.has(card.id) ? 'selected' : ''}" data-id="${card.id}">
+                    ${card.label}
+                </button>
+            `).join('');
+            handArea.querySelectorAll('.card-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (gameOver || currentTurn !== 0) return;
+                    const id = btn.dataset.id;
+                    if (selectedIds.has(id)) selectedIds.delete(id);
+                    else selectedIds.add(id);
+                    renderHand();
+                    playSound('click');
+                });
+            });
+            document.getElementById('landlordCount').textContent = players[1].length;
+            document.getElementById('farmer2Count').textContent = players[2].length;
+        }
+
+        function renderLastPlay(text) {
+            document.getElementById('lastPlay').innerHTML = text;
+        }
+
+        function setStatus(text) {
+            document.getElementById('status').textContent = text;
+        }
+
+        function endGame(winner) {
+            gameOver = true;
+            if (winner === 0) {
+                balance += 300;
+                document.getElementById('message').textContent = '你和队友击败地主，赢得 300！';
+                playSound('win');
+            } else if (winner === 2) {
+                balance += 300;
+                document.getElementById('message').textContent = '农民2 先出完牌，农民阵营获胜，你赢得 300！';
+                playSound('win');
+            } else {
+                document.getElementById('message').textContent = '地主 AI 先出完牌，本局失利。';
+                playSound('lose');
+            }
+            updateBalance();
+            setStatus('本局结束，可点击“新开一局”继续。');
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('passBtn').disabled = true;
+        }
+
+        function advanceTurn() {
+            if (gameOver) return;
+            currentTurn = (currentTurn + 1) % 3;
+            if (currentTurn === currentLeader && passCount >= 2) {
+                currentPlay = null;
+                currentLeader = null;
+                passCount = 0;
+                renderLastPlay('当前牌桌：新一轮开始，可任意出牌');
+            }
+            renderHand();
+            if (players.some((hand, index) => hand.length === 0)) {
+                const winner = players.findIndex(hand => hand.length === 0);
+                endGame(winner);
+                return;
+            }
+            if (currentTurn === 0) {
+                setStatus(currentPlay ? '轮到你出牌：需要压过当前牌型。' : '轮到你出牌：你可以自由出牌。');
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('passBtn').disabled = !currentPlay || currentLeader === 0;
+            } else {
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('passBtn').disabled = true;
+                setStatus(currentTurn === 1 ? '地主 AI 思考中...' : '农民2 思考中...');
+                setTimeout(aiTurn, 700);
+            }
+        }
+
+        function removePlayedCards(hand, cards) {
+            const ids = new Set(cards.map(card => card.id));
+            const next = hand.filter(card => !ids.has(card.id));
+            hand.length = 0;
+            hand.push(...next);
+        }
+
+        function applyPlay(playerIndex, play, playerName) {
+            removePlayedCards(players[playerIndex], play.cards);
+            currentPlay = play;
+            currentLeader = playerIndex;
+            passCount = 0;
+            renderLastPlay(`当前牌桌：<strong>${playerName}</strong> 出了 <div class="cards-line">${play.cards.map(card => `<span>${card.label}</span>`).join('')}</div>`);
+            document.getElementById('message').textContent = `${playerName} 出牌：${play.type}`;
+            playSound('deal');
+            if (players[playerIndex].length === 0) {
+                renderHand();
+                endGame(playerIndex);
+                return;
+            }
+            advanceTurn();
+        }
+
+        function aiTurn() {
+            if (gameOver || currentTurn === 0) return;
+            const playerIndex = currentTurn;
+            const playerName = playerIndex === 1 ? '地主 AI' : '农民2';
+            const play = getAIPlay(players[playerIndex]);
+            if (!play) {
+                passCount += 1;
+                document.getElementById('message').textContent = `${playerName} 选择不出。`;
+                advanceTurn();
+                return;
+            }
+            applyPlay(playerIndex, play, playerName);
+        }
+
+        function playerPlay() {
+            if (gameOver || currentTurn !== 0) return;
+            const chosen = players[0].filter(card => selectedIds.has(card.id));
+            if (!chosen.length) {
+                document.getElementById('message').textContent = '请先选择要出的牌。';
+                return;
+            }
+            const play = analyzeCards(chosen);
+            if (!play) {
+                document.getElementById('message').textContent = '当前选择不是支持的牌型。';
+                return;
+            }
+            if (!beats(play, currentPlay)) {
+                document.getElementById('message').textContent = '牌型或点数不足，无法压过当前牌。';
+                return;
+            }
+            selectedIds.clear();
+            applyPlay(0, play, '你');
+        }
+
+        function playerPass() {
+            if (gameOver || currentTurn !== 0) return;
+            if (!currentPlay || currentLeader === 0) {
+                document.getElementById('message').textContent = '当前不能不出。';
+                return;
+            }
+            selectedIds.clear();
+            passCount += 1;
+            document.getElementById('message').textContent = '你选择不出。';
+            advanceTurn();
+        }
+
+        function newGame() {
+            if (balance < 100) {
+                document.getElementById('message').textContent = '余额不足 100，无法开局。';
+                playSound('lose');
+                return;
+            }
+            balance -= 100;
+            updateBalance();
+            gameOver = false;
+            selectedIds.clear();
+            currentTurn = 2;
+            currentPlay = null;
+            currentLeader = null;
+            passCount = 0;
+            const deck = shuffle(buildDeck());
+            players = [[], [], []];
+            for (let i = 0; i < 17; i++) {
+                players[0].push(deck.shift());
+                players[1].push(deck.shift());
+                players[2].push(deck.shift());
+            }
+            bottom = deck.splice(0, 3);
+            players[1].push(...bottom);
+            players.forEach(sortCards);
+            document.getElementById('bottomCards').textContent = `底牌：${bottom.map(card => card.label).join(' ')}`;
+            renderLastPlay('当前牌桌：暂无出牌');
+            document.getElementById('message').textContent = '新局开始！你先手，尝试率先控牌。';
+            playSound('deal');
+            renderHand();
+            advanceTurn();
+        }
+
+        document.getElementById('playBtn').addEventListener('click', playerPlay);
+        document.getElementById('passBtn').addEventListener('click', playerPass);
+        document.getElementById('newGameBtn').addEventListener('click', newGame);
+        updateBalance();
+        renderHand();
+        document.getElementById('playBtn').disabled = true;
+        document.getElementById('passBtn').disabled = true;
+    </script>
+</body>
+</html>

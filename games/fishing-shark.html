@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>鲨鱼战场</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #050508; color: #ffd700; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        .game-container { width: 100%; max-width: 450px; margin: 0 auto; min-height: 100vh; padding: 18px 16px 92px; background: radial-gradient(circle at top, rgba(0, 90, 140, 0.5), rgba(5,5,8,0.98) 58%), linear-gradient(180deg, rgba(8,18,34,0.95), rgba(5,5,8,0.98)); border-left: 2px solid #b89742; border-right: 2px solid #b89742; }
+        .game-header, .panel, .footer-bar { background: rgba(7, 17, 30, 0.94); border: 1px solid #ffd700; border-radius: 14px; box-shadow: 0 0 18px rgba(0,180,255,0.14); }
+        .game-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; margin-bottom: 14px; }
+        .back-btn { background: none; border: none; color: #ffd700; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .game-title { font-size: 18px; font-weight: 900; text-shadow: 0 0 12px rgba(0,200,255,0.45); }
+        .balance { font-size: 13px; color: #fff; }
+        .panel { padding: 14px; margin-bottom: 14px; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+        .stat-box { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 10px; text-align: center; }
+        .stat-label { font-size: 11px; color: #7ed9ff; margin-bottom: 4px; }
+        .stat-value { font-size: 18px; color: #fff; font-weight: 900; }
+        .game-area { position: relative; height: 430px; overflow: hidden; border-radius: 18px; background: linear-gradient(180deg, rgba(22,110,160,0.28), rgba(7,23,42,0.92)); border: 2px solid rgba(110,220,255,0.5); cursor: crosshair; user-select: none; }
+        .game-area::before, .game-area::after { content: ''; position: absolute; left: 50%; top: 50%; pointer-events: none; }
+        .game-area::before { width: 2px; height: 24px; background: rgba(255,215,0,0.65); transform: translate(-50%, -50%); }
+        .game-area::after { width: 24px; height: 2px; background: rgba(255,215,0,0.65); transform: translate(-50%, -50%); }
+        .ocean-hint { position: absolute; left: 12px; bottom: 12px; font-size: 12px; color: rgba(255,255,255,0.7); }
+        .shark { position: absolute; right: -80px; display: flex; align-items: center; justify-content: center; border-radius: 14px; color: #fff; font-weight: 800; text-shadow: 0 0 8px rgba(0,0,0,0.6); cursor: pointer; }
+        .shark.small { width: 56px; height: 34px; font-size: 28px; background: rgba(60, 180, 255, 0.2); }
+        .shark.medium { width: 72px; height: 42px; font-size: 34px; background: rgba(0, 160, 220, 0.28); }
+        .shark.big { width: 96px; height: 56px; font-size: 40px; background: rgba(0, 120, 180, 0.35); }
+        .control-btn { width: 100%; padding: 15px; border: none; border-radius: 16px; font-size: 24px; font-weight: 900; color: #06111e; background: linear-gradient(180deg, #ffe072, #57d4ff); cursor: pointer; }
+        .control-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .message { min-height: 24px; margin-top: 10px; text-align: center; font-size: 14px; color: #fff; }
+        .footer-bar { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 100%; max-width: 450px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: rgba(5,5,8,0.98); border-bottom: none; border-radius: 14px 14px 0 0; }
+        .footer-label { font-size: 11px; color: #7ed9ff; }
+        .footer-value { font-size: 18px; color: #fff; font-weight: 900; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <button class="back-btn" onclick="history.back()">← 返回</button>
+            <div class="game-title">🦈 鲨鱼战场</div>
+            <div class="balance" id="balanceTop">余额: 10000</div>
+        </div>
+
+        <div class="panel">
+            <div class="stats">
+                <div class="stat-box"><div class="stat-label">倒计时</div><div class="stat-value" id="timer">30</div></div>
+                <div class="stat-box"><div class="stat-label">本轮收益</div><div class="stat-value" id="score">0</div></div>
+                <div class="stat-box"><div class="stat-label">入场费</div><div class="stat-value">100</div></div>
+            </div>
+            <div class="game-area" id="gameArea">
+                <div class="ocean-hint">点击鱼群射击，30 秒内尽量多拿金币。</div>
+            </div>
+            <div class="message" id="message">每局消耗 100 金币，击中小鱼/鲨鱼/鲸鱼分别获得 20 / 50 / 150。</div>
+        </div>
+
+        <div class="panel">
+            <button class="control-btn" id="startBtn">开始一轮</button>
+        </div>
+    </div>
+
+    <div class="footer-bar">
+        <div><div class="footer-label">钱包余额</div><div class="footer-value" id="balanceBottom">10000</div></div>
+        <div><div class="footer-label">本轮净收益</div><div class="footer-value" id="profitView">-100</div></div>
+    </div>
+
+    <script>
+        let balance = parseFloat(localStorage.getItem('wd_wallet')) || 10000;
+        const roundCost = 100;
+        let earnings = 0;
+        let timeLeft = 30;
+        let playing = false;
+        let spawnTimer = null;
+        let countdownTimer = null;
+        let sharkId = 0;
+        let warningPlayed = false;
+        let audioCtx;
+
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function tone(freq, start, duration, type = 'sine', gainValue = 0.05) {
+            const ctx = getAudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, start);
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(gainValue, start + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + duration + 0.02);
+        }
+
+        function playSound(type) {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+            if (type === 'click') {
+                tone(280, now, 0.05, 'square', 0.055);
+                tone(220, now + 0.03, 0.05, 'triangle', 0.045);
+            } else if (type === 'win') {
+                tone(900, now, 0.07, 'triangle', 0.06);
+                tone(1100, now + 0.06, 0.08, 'triangle', 0.06);
+            } else if (type === 'lose') {
+                tone(160, now, 0.18, 'sawtooth', 0.05);
+            } else if (type === 'spin') {
+                tone(980, now, 0.07, 'triangle', 0.05);
+            }
+        }
+
+        function updateBalance() {
+            document.getElementById('balanceTop').textContent = `余额: ${balance.toFixed(2)}`;
+            document.getElementById('balanceBottom').textContent = balance.toFixed(2);
+            document.getElementById('score').textContent = earnings;
+            document.getElementById('timer').textContent = timeLeft;
+            document.getElementById('profitView').textContent = `${earnings - roundCost >= 0 ? '+' : ''}${earnings - roundCost}`;
+            localStorage.setItem('wd_wallet', balance.toFixed(2));
+        }
+
+        function randomType() {
+            const roll = Math.random();
+            if (roll < 0.4) return { cls: 'small', icon: '🐟', value: 20, speed: 6800 };
+            if (roll < 0.8) return { cls: 'medium', icon: '🦈', value: 50, speed: 5600 };
+            return { cls: 'big', icon: '🐳', value: 150, speed: 7200 };
+        }
+
+        function removeShark(el) {
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+        }
+
+        function spawnShark() {
+            if (!playing) return;
+            const gameArea = document.getElementById('gameArea');
+            const shark = document.createElement('div');
+            const meta = randomType();
+            sharkId += 1;
+            shark.className = `shark ${meta.cls}`;
+            shark.textContent = meta.icon;
+            shark.dataset.value = meta.value;
+            shark.dataset.id = sharkId;
+            shark.style.top = `${Math.random() * 340 + 20}px`;
+            shark.style.transition = `transform ${meta.speed / 1000}s linear`;
+            shark.addEventListener('click', event => {
+                event.stopPropagation();
+                if (!playing) return;
+                earnings += parseInt(shark.dataset.value, 10);
+                updateBalance();
+                playSound('click');
+                playSound('win');
+                removeShark(shark);
+            });
+            gameArea.appendChild(shark);
+            requestAnimationFrame(() => {
+                shark.style.transform = 'translateX(-560px)';
+            });
+            shark.addEventListener('transitionend', () => removeShark(shark));
+        }
+
+        function clearRound() {
+            clearInterval(spawnTimer);
+            clearInterval(countdownTimer);
+            spawnTimer = null;
+            countdownTimer = null;
+            Array.from(document.querySelectorAll('.shark')).forEach(removeShark);
+        }
+
+        function endRound() {
+            playing = false;
+            clearRound();
+            balance += earnings;
+            updateBalance();
+            const profit = earnings - roundCost;
+            document.getElementById('message').textContent = profit >= 0
+                ? `回合结束！本轮收益 ${earnings}，净赚 ${profit}。`
+                : `回合结束！本轮收益 ${earnings}，净亏 ${Math.abs(profit)}。`;
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').textContent = '再来一轮';
+            if (profit >= 0) playSound('win');
+            else playSound('lose');
+        }
+
+        function startRound() {
+            if (playing) return;
+            if (balance < roundCost) {
+                document.getElementById('message').textContent = '余额不足，无法进入战场。';
+                playSound('lose');
+                return;
+            }
+            playing = true;
+            earnings = 0;
+            timeLeft = 30;
+            warningPlayed = false;
+            balance -= roundCost;
+            updateBalance();
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('message').textContent = '战场开启！快点击鲨鱼与鱼群射击得分。';
+            clearRound();
+            spawnTimer = setInterval(spawnShark, 700);
+            spawnShark();
+            countdownTimer = setInterval(() => {
+                timeLeft -= 1;
+                if (timeLeft === 5 && !warningPlayed) {
+                    playSound('spin');
+                    warningPlayed = true;
+                }
+                updateBalance();
+                if (timeLeft <= 0) {
+                    endRound();
+                }
+            }, 1000);
+        }
+
+        document.getElementById('gameArea').addEventListener('click', () => {
+            if (playing) playSound('click');
+        });
+        document.getElementById('startBtn').addEventListener('click', startRound);
+        updateBalance();
+    </script>
+</body>
+</html>
